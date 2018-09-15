@@ -17,7 +17,7 @@ func main() {
 	ctx, cancelFn := context.WithCancel(context.Background())
 
 	// Logger
-	logger := golog.NewStdLogger("spam-call-blocker")
+	logger := golog.NewStdLogger("human-call-filter")
 
 	// Setup exit handler
 	exitSigChan := make(chan os.Signal, 1)
@@ -73,6 +73,9 @@ func writeTwilioResp(logger golog.Logger, w http.ResponseWriter, twilioRes *twim
 	}
 
 	// Write bytes as response
+	w.Header().Set("Content-Type", "application/xml")
+	w.WriteHeader(http.StatusOK)
+
 	_, err = w.Write(bytes)
 	if err != nil {
 		logger.Errorf("error writing twilio response: %s", err.Error())
@@ -81,9 +84,6 @@ func writeTwilioResp(logger golog.Logger, w http.ResponseWriter, twilioRes *twim
 			http.StatusInternalServerError)
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/xml")
-	w.WriteHeader(http.StatusOK)
 }
 
 // ServeHTTP handles a Twilio phone call
@@ -106,11 +106,11 @@ func (h CallHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case twiml.InProgress:
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, http.StatusText(http.StatusOK))
-		return
 
 	case twiml.Ringing, twiml.Queued:
 		twilioRes.Add(&twiml.Say{
-			Text: "hello world",
+			Voice: "woman",
+			Text:  "hello world",
 		})
 		writeTwilioResp(h.logger, w, twilioRes)
 
