@@ -1,0 +1,2 @@
+export DEPLOY_DIR="deploy"
+export DOCKER_REPO="noahhuppert/human-call-filter"
