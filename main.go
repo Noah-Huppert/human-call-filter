@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"os"
@@ -42,13 +43,16 @@ func main() {
 
 	// Setup twilio number handler
 	router := mux.NewRouter()
+	router.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "OK")
+	})
 	router.Handle("/call", calls.NewCallsHandler(logger)).Methods("POST")
 	router.Handle("/input/test/{eq}", calls.NewTestInputHandler(logger, cfg)).Methods("POST")
 	router.PathPrefix("/audio-clips").Handler(http.StripPrefix("/audio-clips/",
 		http.FileServer(http.Dir("./audio-clips"))))
 
 	server := http.Server{
-		Addr:    ":8000",
+		Addr:    fmt.Sprintf(":%s", cfg.HTTPPort),
 		Handler: router,
 	}
 
