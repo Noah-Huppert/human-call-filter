@@ -46,6 +46,9 @@ func (h TestInputHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.logger.Debugf("received input request, correct answer: %s, request: %s",
+		eq, twilioReq)
+
 	// Get challenge response
 	entered := twilioReq.Digits
 
