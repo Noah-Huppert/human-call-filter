@@ -48,8 +48,7 @@ func main() {
 	})
 	router.Handle("/call", calls.NewCallsHandler(logger)).Methods("POST")
 	router.Handle("/input/test/{eq}", calls.NewTestInputHandler(logger, cfg)).Methods("POST")
-	router.PathPrefix("/audio-clips").Handler(http.StripPrefix("/audio-clips/",
-		http.FileServer(http.Dir("./audio-clips"))))
+	router.Handle("/audio-clips/{file}.mp3", calls.NewAudioClipHandler(logger))
 
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.HTTPPort),
