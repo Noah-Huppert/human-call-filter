@@ -23,9 +23,8 @@ ingress:
     # kubernetes.io/tls-acme: "true"
      kubernetes.io/ingress.class: "gce"
      external-dns.alpha.kubernetes.io/hostname: "human-call-filter.noahh.io."
-  path: /
   hosts:
-    - human-call-filter.noahh.io.
+    - "human-call-filter.noahh.io"
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
