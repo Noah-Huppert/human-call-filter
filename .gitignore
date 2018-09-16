@@ -3,3 +3,6 @@ vendor/
 
 # Env file
 .env
+
+# Helm deploy
+*.tgz

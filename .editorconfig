@@ -3,3 +3,6 @@ root = true
 [*]
 indent_style = spaces
 indent_size = 4
+
+[deploy]
+indent_size = 2

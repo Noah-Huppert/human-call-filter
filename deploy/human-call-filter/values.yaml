@@ -18,11 +18,11 @@ service:
 
 ingress:
   enabled: true
-  annotations: {}
+  annotations:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
      kubernetes.io/ingress.class: "gce"
-     external-dns.alpha.kubernetes.io/hostname: human-call-filter.noahh.io.
+     external-dns.alpha.kubernetes.io/hostname: "human-call-filter.noahh.io."
   path: /
   hosts:
     - human-call-filter.noahh.io.
