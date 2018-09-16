@@ -1,2 +1,5 @@
 # Go dependencies
 vendor/
+
+# Env file
+.env

@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/signal"
+	"time"
 
 	"github.com/Noah-Huppert/human-call-filter/calls"
+	"github.com/Noah-Huppert/human-call-filter/config"
 
 	"github.com/Noah-Huppert/golog"
 	"github.com/gorilla/mux"
@@ -28,9 +31,19 @@ func main() {
 		cancelFn()
 	}()
 
+	// Load application configuration
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		logger.Fatalf("error loading configuration: %s", err.Error())
+	}
+
+	// Seed random number generator
+	rand.Seed(time.Now().UnixNano())
+
 	// Setup twilio number handler
 	router := mux.NewRouter()
 	router.Handle("/call", calls.NewCallsHandler(logger)).Methods("POST")
+	router.Handle("/input/test/{eq}", calls.NewTestInputHandler(logger, cfg)).Methods("POST")
 	router.PathPrefix("/audio-clips").Handler(http.StripPrefix("/audio-clips/",
 		http.FileServer(http.Dir("./audio-clips"))))
 
@@ -50,7 +63,7 @@ func main() {
 
 	logger.Debugf("starting http server on %s", server.Addr)
 
-	err := server.ListenAndServe()
+	err = server.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
 		logger.Fatalf("error running http server: %s", err.Error())
 	}
