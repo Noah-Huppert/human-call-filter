@@ -14,5 +14,5 @@ type PhoneCall struct {
 	PhoneNumberID int64 `db:"phone_number_id"`
 
 	// DateReceived is the date and time the phone call was received
-	DateReceived time.Time
+	DateReceived time.Time `db:"date_received"`
 }
