@@ -1,4 +1,4 @@
-.PHONY: db
+.PHONY: db migrate
 
 # db starts a local database
 db:
@@ -10,3 +10,7 @@ db:
 		-e POSTGRES_DB=dev-human-call-filter \
 		-e POSTGRES_USER=dev-human-call-filter \
 		postgres
+
+# migrate runs database migrations
+migrate:
+	go run scripts/db-migrate.go
