@@ -53,9 +53,12 @@ func main() {
 	router.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "OK")
 	})
-	router.Handle("/call", handlers.NewCallsHandler(logger, db)).Methods("POST")
-	router.Handle("/input/test/{eq}", handlers.NewTestInputHandler(logger, cfg)).
+	router.Handle("/call", handlers.NewCallsHandler(logger, db)).
 		Methods("POST")
+
+	router.Handle("/input/challenge/{challenge_id}",
+		handlers.NewTestInputHandler(logger, cfg, db)).Methods("POST")
+
 	router.Handle("/audio-clips/{file}.mp3", handlers.NewAudioClipsHandler(logger))
 
 	server := http.Server{
