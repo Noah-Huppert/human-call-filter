@@ -1,13 +1,15 @@
 package models
 
 import (
+	"fmt"
+
 	"github.com/jmoiron/sqlx"
 )
 
 // PhoneNumber holds information about a phone call
 type PhoneNumber struct {
 	// ID is a unique identifier
-	ID int
+	ID int64
 
 	// Number is the phone number
 	Number string
@@ -32,4 +34,31 @@ type PhoneNumber struct {
 func (n *PhoneNumber) QueryByNumber(db *sqlx.DB) error {
 	return db.Get(n, "SELECT id, number, name, state, city, zip_code FROM "+
 		"phone_numbers WHERE number = $1", n.Number)
+}
+
+// Insert adds a phone number to the database. The ID field is updated with the
+// inserted row's id value
+func (n *PhoneNumber) Insert(db *sqlx.DB) error {
+	// Start transaction
+	tx, err := db.Beginx()
+	if err != nil {
+		return fmt.Errorf("error starting transaction: %s", err.Error())
+	}
+
+	// Insert
+	err = tx.QueryRowx("INSERT INTO phone_numbers (number, name, state, "+
+		"city, zip_code) VALUES ($1, $2, $3, $4, $5) RETURNING id", n.Number,
+		n.Name, n.State, n.City, n.ZipCode).StructScan(n)
+
+	if err != nil {
+		return fmt.Errorf("error executing insert statement: %s", err.Error())
+	}
+
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("error committing transaction: %s", err.Error())
+	}
+
+	return nil
 }
