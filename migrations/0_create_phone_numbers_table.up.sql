@@ -3,6 +3,6 @@ CREATE TABLE phone_numbers (
 	number TEXT NOT NULL,
 	name TEXT,
 	state TEXT NOT NULL,
-	city TEXT NOT NULL
+	city TEXT NOT NULL,
 	zip_code TEXT NOT NULL
 )
