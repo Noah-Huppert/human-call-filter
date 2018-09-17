@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
@@ -61,4 +62,24 @@ func (n *PhoneNumber) Insert(db *sqlx.DB) error {
 	}
 
 	return nil
+}
+
+// HasAChallengePass queries the database to determine if a phone number with
+// a matching ID has every passed a challenge before.
+//
+// If it has passed a challenge before true is returned, false otherwise.
+func (n PhoneNumber) HasAChallengePass(db *sqlx.DB) (bool, error) {
+	var exists bool
+
+	err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM phone_calls, challenges "+
+		"WHERE phone_calls.phone_number_id = $1 AND "+
+		"challenges.status = $2 LIMIT 1)", n.ID, ChallengeStatusPassed).
+		Scan(exists)
+
+	if err != nil && err != sql.ErrNoRows {
+		return false, fmt.Errorf("error executing select statement: %s",
+			err.Error())
+	}
+
+	return exists, nil
 }
