@@ -93,6 +93,8 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.logger.Debugf("phone call: %#v", phoneCall)
+
 	// Create response
 	twilioRes := twiml.NewResponse()
 
@@ -127,6 +129,8 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			writeStatus(w, http.StatusInternalServerError)
 			return
 		}
+
+		h.logger.Debugf("challenge: %#v", challenge)
 
 		// Ask question to user
 		twilioRes.Add(&twiml.Play{
