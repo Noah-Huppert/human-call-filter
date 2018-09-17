@@ -6,3 +6,6 @@ vendor/
 
 # Helm deploy
 *.tgz
+
+# Local Postgres database
+run-data/
