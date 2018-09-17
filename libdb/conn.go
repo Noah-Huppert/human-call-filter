@@ -13,7 +13,8 @@ import (
 // Connect to a PostgreSQL database
 func Connect(dbCfg config.DBConfig) (*sql.DB, error) {
 	// Assemble database connection string
-	sqlConnStr := fmt.Sprintf("host=%s port=%d dbname=%s user=%s sslmode=disable", dbCfg.DBHost, dbCfg.DBPort,
+	sqlConnStr := fmt.Sprintf("host=%s port=%d dbname=%s user=%s "+
+		"sslmode=disable", dbCfg.DBHost, dbCfg.DBPort,
 		dbCfg.DBName, dbCfg.DBUsername)
 
 	if len(dbCfg.DBPassword) > 0 {
@@ -23,7 +24,8 @@ func Connect(dbCfg config.DBConfig) (*sql.DB, error) {
 	// Connect to database
 	db, err := sql.Open("postgres", sqlConnStr)
 	if err != nil {
-		return nil, fmt.Errorf("error connecting to the database: %s", err.Error())
+		return nil, fmt.Errorf("error opening connection to database: %s",
+			err.Error())
 	}
 
 	return db, nil

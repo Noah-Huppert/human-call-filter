@@ -1,23 +1,32 @@
-package calls
+package handlers
 
 import (
+	"database/sql"
 	"fmt"
 	"math/rand"
 	"net/http"
 
+	"github.com/Noah-Huppert/human-call-filter/models"
+
 	"github.com/BTBurke/twiml"
 	"github.com/Noah-Huppert/golog"
+	"github.com/jmoiron/sqlx"
 )
 
 // CallsHandler implements a http.Handler which responds to Twilio phone calls
 type CallsHandler struct {
+	// logger records debug information
 	logger golog.Logger
+
+	// db is a database connection
+	db *sqlx.DB
 }
 
 // NewCallsHandler creates a new CallsHandler
-func NewCallsHandler(logger golog.Logger) CallsHandler {
+func NewCallsHandler(logger golog.Logger, db *sqlx.DB) CallsHandler {
 	return CallsHandler{
 		logger: logger,
+		db:     db,
 	}
 }
 
@@ -32,6 +41,19 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusBadRequest),
 			http.StatusBadRequest)
 		return
+	}
+
+	// Query database for phone number
+	phoneNum := &models.PhoneNumber{
+		Number: twilioReq.From,
+	}
+
+	err = phoneNum.QueryByNumber(h.db)
+	if err == sql.ErrNoRows {
+		h.logger.Debugf("No phone number found for: %#v", phoneNum)
+	} else if err != nil {
+		h.logger.Errorf("error querying database for phone number: %s",
+			err.Error())
 	}
 
 	// Create response

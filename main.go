@@ -9,8 +9,9 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/Noah-Huppert/human-call-filter/calls"
 	"github.com/Noah-Huppert/human-call-filter/config"
+	"github.com/Noah-Huppert/human-call-filter/handlers"
+	"github.com/Noah-Huppert/human-call-filter/libdb"
 
 	"github.com/Noah-Huppert/golog"
 	"github.com/gorilla/mux"
@@ -41,15 +42,21 @@ func main() {
 	// Seed random number generator
 	rand.Seed(time.Now().UnixNano())
 
+	// Connect to database
+	db, err := libdb.ConnectX(cfg.DBConfig)
+	if err != nil {
+		logger.Fatalf("error connecting to database: %s", err.Error())
+	}
+
 	// Setup twilio number handler
 	router := mux.NewRouter()
 	router.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "OK")
 	})
-	router.Handle("/call", calls.NewCallsHandler(logger)).Methods("POST")
-	router.Handle("/input/test/{eq}", calls.NewTestInputHandler(logger, cfg)).
+	router.Handle("/call", handlers.NewCallsHandler(logger, db)).Methods("POST")
+	router.Handle("/input/test/{eq}", handlers.NewTestInputHandler(logger, cfg)).
 		Methods("POST")
-	router.Handle("/audio-clips/{file}.mp3", calls.NewAudioClipsHandler(logger))
+	router.Handle("/audio-clips/{file}.mp3", handlers.NewAudioClipsHandler(logger))
 
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.HTTPPort),
