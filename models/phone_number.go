@@ -74,7 +74,7 @@ func (n PhoneNumber) HasAChallengePass(db *sqlx.DB) (bool, error) {
 	err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM phone_calls, challenges "+
 		"WHERE phone_calls.phone_number_id = $1 AND "+
 		"challenges.status = $2 LIMIT 1)", n.ID, ChallengeStatusPassed).
-		Scan(exists)
+		Scan(&exists)
 
 	if err != nil && err != sql.ErrNoRows {
 		return false, fmt.Errorf("error executing select statement: %s",

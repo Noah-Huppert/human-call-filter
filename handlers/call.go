@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Noah-Huppert/human-call-filter/config"
 	"github.com/Noah-Huppert/human-call-filter/models"
 
 	"github.com/BTBurke/twiml"
@@ -19,14 +20,20 @@ type CallsHandler struct {
 	// logger records debug information
 	logger golog.Logger
 
+	// cfg holds application configuration
+	cfg *config.Config
+
 	// db is a database connection
 	db *sqlx.DB
 }
 
 // NewCallsHandler creates a new CallsHandler
-func NewCallsHandler(logger golog.Logger, db *sqlx.DB) CallsHandler {
+func NewCallsHandler(logger golog.Logger, cfg *config.Config,
+	db *sqlx.DB) CallsHandler {
+
 	return CallsHandler{
 		logger: logger,
+		cfg:    cfg,
 		db:     db,
 	}
 }
@@ -46,6 +53,8 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		writeStatus(w, http.StatusBadRequest)
 		return
 	}
+
+	h.logger.Debugf("received call request %#v", twilioReq)
 
 	// Query database for phone number
 	phoneNum := &models.PhoneNumber{
@@ -99,7 +108,15 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Create response
 	twilioRes := twiml.NewResponse()
 
-	h.logger.Debugf("received call request %#v", twilioReq)
+	// Check if phone number has already passed a challenge
+	alreadyVerified, err := phoneNum.HasAChallengePass(h.db)
+	if err != nil {
+		h.logger.Errorf("error determining if phone number has passed a "+
+			"challenge: %s", err.Error())
+
+		writeStatus(w, http.StatusInternalServerError)
+		return
+	}
 
 	switch twilioReq.CallStatus {
 	case twiml.InProgress:
@@ -107,46 +124,55 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, http.StatusText(http.StatusOK))
 
 	case twiml.Ringing, twiml.Queued:
-		// Generate challenge
-		a := rand.Intn(3) + 1
-		b := rand.Intn(3) + 1
-		eq := a + b
+		if alreadyVerified {
+			twilioRes.Add(&twiml.Dial{
+				Number: h.cfg.DestinationNumber,
+			})
 
-		// Insert challenge into db
-		challenge := &models.Challenge{
-			PhoneCallID: phoneCall.ID,
-			DateAsked:   time.Now(),
-			OperandA:    a,
-			OperandB:    b,
-			Solution:    eq,
-			Status:      models.ChallengeStatusAnswering,
+			h.logger.Debug("already verified")
+		} else {
+			// Generate challenge
+			a := rand.Intn(3) + 1
+			b := rand.Intn(3) + 1
+			eq := a + b
+
+			// Insert challenge into db
+			challenge := &models.Challenge{
+				PhoneCallID: phoneCall.ID,
+				DateAsked:   time.Now(),
+				OperandA:    a,
+				OperandB:    b,
+				Solution:    eq,
+				Status:      models.ChallengeStatusAnswering,
+			}
+
+			err = challenge.Insert(h.db)
+			if err != nil {
+				h.logger.Errorf("error inserting challenge into db: %s",
+					err.Error())
+
+				writeStatus(w, http.StatusInternalServerError)
+				return
+			}
+
+			h.logger.Debugf("challenge: %#v", challenge)
+
+			// Ask question to user
+			twilioRes.Add(&twiml.Play{
+				URL:    "/audio-clips/intro.mp3",
+				Digits: "w",
+			})
+			twilioRes.Add(&twiml.Say{
+				Voice: "man",
+				Text:  fmt.Sprintf("What is ,%d. plus ,%d", a, b),
+			})
+			twilioRes.Add(&twiml.Gather{
+				Action:    fmt.Sprintf("/input/challenge/%d", challenge.ID),
+				NumDigits: 1,
+				Timeout:   10,
+			})
 		}
 
-		err = challenge.Insert(h.db)
-		if err != nil {
-			h.logger.Errorf("error inserting challenge into db: %s",
-				err.Error())
-
-			writeStatus(w, http.StatusInternalServerError)
-			return
-		}
-
-		h.logger.Debugf("challenge: %#v", challenge)
-
-		// Ask question to user
-		twilioRes.Add(&twiml.Play{
-			URL:    "/audio-clips/intro.mp3",
-			Digits: "w",
-		})
-		twilioRes.Add(&twiml.Say{
-			Voice: "man",
-			Text:  fmt.Sprintf("What is ,%d. plus ,%d", a, b),
-		})
-		twilioRes.Add(&twiml.Gather{
-			Action:    fmt.Sprintf("/input/challenge/%d", challenge.ID),
-			NumDigits: 1,
-			Timeout:   10,
-		})
 		writeTwilioResp(h.logger, w, twilioRes)
 
 	default:

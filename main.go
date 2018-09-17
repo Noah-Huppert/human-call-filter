@@ -57,7 +57,7 @@ func main() {
 		routesLogger.GetChild("health")))
 
 	router.Handle("/call", handlers.NewCallsHandler(
-		routesLogger.GetChild("call"), db)).Methods("POST")
+		routesLogger.GetChild("call"), cfg, db)).Methods("POST")
 
 	router.Handle("/input/challenge/{challenge_id}",
 		handlers.NewTestInputHandler(routesLogger.GetChild("input"), cfg,
