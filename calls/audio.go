@@ -8,20 +8,21 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// AudioClipHandler is an http.Handler which sends audio files
-type AudioClipHandler struct {
+// AudioClipsHandler is an http.Handler which sends audio files
+type AudioClipsHandler struct {
+	// logger prints debug information
 	logger golog.Logger
 }
 
-// NewAudioClipHandler creates an AudioClipHandler
-func NewAudioClipHandler(logger golog.Logger) AudioClipHandler {
-	return AudioClipHandler{
+// NewAudioClipsHandler creates an AudioClipsHandler
+func NewAudioClipsHandler(logger golog.Logger) AudioClipsHandler {
+	return AudioClipsHandler{
 		logger: logger,
 	}
 }
 
 // ServeHTTP implements http.Handler
-func (h AudioClipHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h AudioClipsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Get file to serve
 	vars := mux.Vars(r)
 
