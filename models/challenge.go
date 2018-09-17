@@ -73,12 +73,22 @@ func (c *Challenge) Insert(db *sqlx.DB) error {
 	return nil
 }
 
-// QueryByIdForAnswer attempts to find a challenge with a matching ID field.
+// QueryByIDForAnswer attempts to find a challenge with a matching ID field.
 // Selects the Solution and Status fields from the db.
 //
-// Returns the sql.ErrNoRows error if no challenges with a matching ID
-// were found.
-func (c *Challenge) QueryByIdForAnswer(db *sqlx.DB) error {
+// Returns the sql.ErrNoRows error if no matching challenges were found.
+func (c *Challenge) QueryByIDForAnswer(db *sqlx.DB) error {
 	return db.Get(c, "SELECT solution, status FROM challenges WHERE id = $1",
 		c.ID)
+}
+
+// UpdateStatusByID updates the Status field of a challenge with a matching
+// ID field.
+//
+// Returns the sql.ErrNoRows error if no matching challenges were found.
+func (c Challenge) UpdateStatusByID(db *sqlx.DB) error {
+	_, err := db.Exec("UPDATE challenges SET status = $1 WHERE id = $2",
+		c.Status, c.ID)
+
+	return err
 }

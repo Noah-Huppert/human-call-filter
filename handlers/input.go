@@ -57,7 +57,7 @@ func (h TestInputHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		ID: challengeID,
 	}
 
-	err = challenge.QueryByIdForAnswer(h.db)
+	err = challenge.QueryByIDForAnswer(h.db)
 
 	if err == sql.ErrNoRows {
 		h.logger.Errorf("received input for challenge which didn't exist, "+
@@ -139,5 +139,9 @@ func (h TestInputHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	writeTwilioResp(h.logger, w, twilioRes)
 
-	// TODO: Save challenge status
+	// Save challenge status
+	err = challenge.UpdateStatusByID(h.db)
+	if err != nil {
+		h.logger.Errorf("error updating challenge status: %s", err.Error())
+	}
 }
