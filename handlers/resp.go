@@ -7,6 +7,11 @@ import (
 	"github.com/Noah-Huppert/golog"
 )
 
+// writeStatus responds with a status code and the related status text
+func writeStatus(w http.ResponseWriter, status int) {
+	http.Error(w, http.StatusText(status), status)
+}
+
 // writeTwilioResp writes a Twilio response as an HTTP response
 func writeTwilioResp(logger golog.Logger, w http.ResponseWriter,
 	twilioRes *twiml.Response) {
@@ -18,8 +23,7 @@ func writeTwilioResp(logger golog.Logger, w http.ResponseWriter,
 		logger.Errorf("error encoding twilio response into bytes: %s",
 			err.Error())
 
-		http.Error(w, http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError)
+		writeStatus(http.StatusInternalServerError)
 		return
 	}
 
@@ -31,8 +35,7 @@ func writeTwilioResp(logger golog.Logger, w http.ResponseWriter,
 	if err != nil {
 		logger.Errorf("error writing twilio response: %s", err.Error())
 
-		http.Error(w, http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError)
+		writeStatus(http.StatusInternalServerError)
 		return
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/Noah-Huppert/human-call-filter/models"
 
@@ -32,14 +33,17 @@ func NewCallsHandler(logger golog.Logger, db *sqlx.DB) CallsHandler {
 
 // ServeHTTP handles a Twilio phone call
 func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// Note time request was received for later use in PhoneCall model
+	callReceived := time.Now()
+
 	// Parse request
 	var twilioReq twiml.VoiceRequest
 
 	err := twiml.Bind(&twilioReq, r)
 	if err != nil {
 		h.logger.Errorf("error reading Twilio request: %s", err.Error())
-		http.Error(w, http.StatusText(http.StatusBadRequest),
-			http.StatusBadRequest)
+
+		writeStatus(http.StatusBadRequest)
 		return
 	}
 
@@ -54,19 +58,40 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	err = phoneNum.QueryByNumber(h.db)
 
+	// No number found, insert
 	if err == sql.ErrNoRows {
-		// No number found, insert
 		err = phoneNum.Insert(h.db)
 		if err != nil {
-			h.logger.Errorf("error inserting new phone number: %s",
+			h.logger.Errorf("error inserting new phone number into db: %s",
 				err.Error())
+
+			writeStatus(http.StatusInternalServerError)
+			return
 		}
 	} else if err != nil {
 		h.logger.Errorf("error querying database for phone number: %s",
 			err.Error())
+
+		writeStatus(http.StatusInternalServerError)
+		return
 	}
 
 	h.logger.Debugf("number: %#v", phoneNum)
+
+	// Insert phone call row into database
+	phoneCall := &models.PhoneCall{
+		PhoneNumberID: phoneNum.ID,
+		DateReceived:  callReceived,
+	}
+
+	err = phoneCall.Insert(h.db)
+	if err != nil {
+		h.logger.Errorf("error inserting new phone call into db: %s",
+			err.Error())
+
+		writeStatus(http.StatusInternalServerError)
+		return
+	}
 
 	// Create response
 	twilioRes := twiml.NewResponse()
