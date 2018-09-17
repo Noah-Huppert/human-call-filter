@@ -43,12 +43,12 @@ func (h TestInputHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Get challenge id from URL
 	vars := mux.Vars(r)
 
-	challengeID, err := strconv.Atoi(vars["challenge_id"])
+	challengeID, err := strconv.ParseInt(vars["challenge_id"], 10, 64)
 	if err != nil {
 		h.logger.Errorf("error parsing challenge id URL parameter into "+
 			"int: %s", err.Error())
 
-		writeStatus(http.StatusBadRequest)
+		writeStatus(w, http.StatusBadRequest)
 		return
 	}
 
@@ -57,36 +57,36 @@ func (h TestInputHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		ID: challengeID,
 	}
 
-	err = challenge.QueryByIdForAnswer(db)
+	err = challenge.QueryByIdForAnswer(h.db)
 
 	if err == sql.ErrNoRows {
 		h.logger.Errorf("received input for challenge which didn't exist, "+
 			"challenge id: %d", challenge.ID)
 
-		writeStatus(http.StatusNotFound)
+		writeStatus(w, http.StatusNotFound)
 		return
 	} else if err != nil {
 		h.logger.Errorf("error query database for challenge: %s", err.Error())
 
-		writeStatus(http.StatusInternalServerError)
+		writeStatus(w, http.StatusInternalServerError)
 		return
 	}
 
 	h.logger.Debugf("challenge: %#v", challenge)
 
 	// Check challenge hasn't already been answered
-	if challenge.Status != models.ChallengeStatusAsked {
+	if challenge.Status != models.ChallengeStatusAnswering {
 		h.logger.Error("received input for challenge which has already " +
 			"been answered")
 
-		writeStatus(http.StatusBadRequest)
+		writeStatus(w, http.StatusBadRequest)
 		return
 	}
 
 	// Parse request
 	var twilioReq twiml.RecordActionRequest
 
-	err := twiml.Bind(&twilioReq, r)
+	err = twiml.Bind(&twilioReq, r)
 	if err != nil {
 		h.logger.Errorf("error reading Twilio request: %s", err.Error())
 		http.Error(w, http.StatusText(http.StatusBadRequest),
@@ -94,8 +94,7 @@ func (h TestInputHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.logger.Debugf("received input request, correct answer: %s, request: %s",
-		eq, twilioReq)
+	h.logger.Debugf("received input request: %s", twilioReq)
 
 	// Get challenge response
 	enteredStr := twilioReq.Digits
@@ -105,7 +104,7 @@ func (h TestInputHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.logger.Errorf("error parsing entered digits into int, digits: %s,"+
 			" err: %s", enteredStr, err.Error())
 
-		writeStatus(http.StatusInternalServerError)
+		writeStatus(w, http.StatusInternalServerError)
 		return
 	}
 

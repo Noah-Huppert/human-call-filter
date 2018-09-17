@@ -43,7 +43,7 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.logger.Errorf("error reading Twilio request: %s", err.Error())
 
-		writeStatus(http.StatusBadRequest)
+		writeStatus(w, http.StatusBadRequest)
 		return
 	}
 
@@ -65,14 +65,14 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			h.logger.Errorf("error inserting new phone number into db: %s",
 				err.Error())
 
-			writeStatus(http.StatusInternalServerError)
+			writeStatus(w, http.StatusInternalServerError)
 			return
 		}
 	} else if err != nil {
 		h.logger.Errorf("error querying database for phone number: %s",
 			err.Error())
 
-		writeStatus(http.StatusInternalServerError)
+		writeStatus(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -89,7 +89,7 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.logger.Errorf("error inserting new phone call into db: %s",
 			err.Error())
 
-		writeStatus(http.StatusInternalServerError)
+		writeStatus(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -116,7 +116,7 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			OperandA:    a,
 			OperandB:    b,
 			Solution:    eq,
-			Status:      models.ChallengeStatusAsked,
+			Status:      models.ChallengeStatusAnswering,
 		}
 
 		err = challenge.Insert(h.db)
@@ -124,7 +124,7 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			h.logger.Errorf("error inserting challenge into db: %s",
 				err.Error())
 
-			writeStatus(http.StatusInternalServerError)
+			writeStatus(w, http.StatusInternalServerError)
 			return
 		}
 

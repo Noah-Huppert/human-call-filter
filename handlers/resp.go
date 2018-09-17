@@ -23,7 +23,7 @@ func writeTwilioResp(logger golog.Logger, w http.ResponseWriter,
 		logger.Errorf("error encoding twilio response into bytes: %s",
 			err.Error())
 
-		writeStatus(http.StatusInternalServerError)
+		writeStatus(w, http.StatusInternalServerError)
 		return
 	}
 
@@ -35,7 +35,7 @@ func writeTwilioResp(logger golog.Logger, w http.ResponseWriter,
 	if err != nil {
 		logger.Errorf("error writing twilio response: %s", err.Error())
 
-		writeStatus(http.StatusInternalServerError)
+		writeStatus(w, http.StatusInternalServerError)
 		return
 	}
 }

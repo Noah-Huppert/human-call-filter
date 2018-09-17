@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -56,8 +57,8 @@ func (c *Challenge) Insert(db *sqlx.DB) error {
 	// Insert
 	err = tx.QueryRowx("INSERT INTO challenges (phone_call_id, date_asked, "+
 		"operand_a, operand_b, solution, status) VALUES ($1, $2, $3, $4, $5, "+
-		"$6)", c.PhoneCallID, c.DateAsked, c.OperandA, c.OperandB, c.Solution,
-		c.Status).StructScan(c)
+		"$6) RETURNING id", c.PhoneCallID, c.DateAsked, c.OperandA, c.OperandB,
+		c.Solution, c.Status).StructScan(c)
 
 	if err != nil {
 		return fmt.Errorf("error executing insert statement: %s", err.Error())
@@ -77,7 +78,7 @@ func (c *Challenge) Insert(db *sqlx.DB) error {
 //
 // Returns the sql.ErrNoRows error if no challenges with a matching ID
 // were found.
-func (c *challenge) QueryByIdForAnswer(db *sqlx.DB) error {
+func (c *Challenge) QueryByIdForAnswer(db *sqlx.DB) error {
 	return db.Get(c, "SELECT solution, status FROM challenges WHERE id = $1",
 		c.ID)
 }
