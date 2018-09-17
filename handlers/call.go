@@ -45,16 +45,28 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// Query database for phone number
 	phoneNum := &models.PhoneNumber{
-		Number: twilioReq.From,
+		Number:  twilioReq.From,
+		Name:    twilioReq.CallerName,
+		State:   twilioReq.FromState,
+		City:    twilioReq.FromCity,
+		ZipCode: twilioReq.FromZip,
 	}
 
 	err = phoneNum.QueryByNumber(h.db)
+
 	if err == sql.ErrNoRows {
-		h.logger.Debugf("No phone number found for: %#v", phoneNum)
+		// No number found, insert
+		err = phoneNum.Insert(h.db)
+		if err != nil {
+			h.logger.Errorf("error inserting new phone number: %s",
+				err.Error())
+		}
 	} else if err != nil {
 		h.logger.Errorf("error querying database for phone number: %s",
 			err.Error())
 	}
+
+	h.logger.Debugf("number: %#v", phoneNum)
 
 	// Create response
 	twilioRes := twiml.NewResponse()
