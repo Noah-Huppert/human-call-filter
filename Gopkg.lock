@@ -14,6 +14,12 @@
   version = "1.1.0"
 
 [[projects]]
+  name = "github.com/golang-migrate/migrate"
+  packages = [".","database","database/postgres","source","source/file"]
+  revision = "93d53a5ae84d81945eedadfe8f6865530d61d51c"
+  version = "v3.5.1"
+
+[[projects]]
   name = "github.com/gorilla/context"
   packages = ["."]
   revision = "08b5f424b9271eedf6f9f0ce86cb9396ed337a42"
@@ -31,9 +37,27 @@
   revision = "d0e4c24cff97ae983e9847e0ed5a02dc10013d41"
   version = "v1.0.2"
 
+[[projects]]
+  branch = "master"
+  name = "github.com/jmoiron/sqlx"
+  packages = [".","reflectx"]
+  revision = "0dae4fefe7c0e190f7b5a78dac28a1c82cc8d849"
+
+[[projects]]
+  name = "github.com/kelseyhightower/envconfig"
+  packages = ["."]
+  revision = "f611eb38b3875cc3bd991ca91c51d06446afa14c"
+  version = "v1.3.0"
+
+[[projects]]
+  name = "github.com/lib/pq"
+  packages = [".","oid"]
+  revision = "4ded0e9383f75c197b3a2aaa6d590ac52df6fd79"
+  version = "v1.0.0"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7db44c2b58ce1db043e186323439ac5e056d6c21cf9bbc83f79fe4812bee1f5e"
+  inputs-digest = "7fe320071409b828a0a78cf0390437efaa0d6ac7a0dbde2d4e0629bfd38b8650"
   solver-name = "gps-cdcl"
   solver-version = 1
