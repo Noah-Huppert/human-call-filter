@@ -81,6 +81,7 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Insert phone call row into database
 	phoneCall := &models.PhoneCall{
 		PhoneNumberID: phoneNum.ID,
+		TwilioCallID:  twilioReq.CallSid,
 		DateReceived:  callReceived,
 	}
 

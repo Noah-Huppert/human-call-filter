@@ -16,6 +16,9 @@ type PhoneCall struct {
 	// the call
 	PhoneNumberID int64 `db:"phone_number_id"`
 
+	// TwilioCallID is the unique ID twilio assigned to the call
+	TwilioCallID string `db:"twilio_call_id"`
+
 	// DateReceived is the date and time the phone call was received
 	DateReceived time.Time `db:"date_received"`
 }
@@ -31,8 +34,8 @@ func (c *PhoneCall) Insert(db *sqlx.DB) error {
 
 	// Insert
 	err = tx.QueryRowx("INSERT INTO phone_calls (phone_number_id, "+
-		"date_received) VALUES ($1, $2) RETURNING id", c.PhoneNumberID,
-		c.DateReceived).StructScan(c)
+		"twilio_call_id, date_received) VALUES ($1, $2, $3) RETURNING id",
+		c.PhoneNumberID, c.TwilioCallID, c.DateReceived).StructScan(c)
 
 	if err != nil {
 		return fmt.Errorf("error executing insert statement: %s", err.Error())
