@@ -71,3 +71,13 @@ func (c *Challenge) Insert(db *sqlx.DB) error {
 
 	return nil
 }
+
+// QueryByIdForAnswer attempts to find a challenge with a matching ID field.
+// Selects the Solution and Status fields from the db.
+//
+// Returns the sql.ErrNoRows error if no challenges with a matching ID
+// were found.
+func (c *challenge) QueryByIdForAnswer(db *sqlx.DB) error {
+	return db.Get(c, "SELECT solution, status FROM challenges WHERE id = $1",
+		c.ID)
+}
