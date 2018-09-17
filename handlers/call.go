@@ -104,10 +104,31 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, http.StatusText(http.StatusOK))
 
 	case twiml.Ringing, twiml.Queued:
+		// Generate challenge
 		a := rand.Intn(3) + 1
 		b := rand.Intn(3) + 1
 		eq := a + b
 
+		// Insert challenge into db
+		challenge := &models.Challenge{
+			PhoneCallID: phoneCall.ID,
+			DateAsked:   time.Now(),
+			OperandA:    a,
+			OperandB:    b,
+			Solution:    eq,
+			Status:      models.ChallengeStatusAsked,
+		}
+
+		err = challenge.Insert(h.db)
+		if err != nil {
+			h.logger.Errorf("error inserting challenge into db: %s",
+				err.Error())
+
+			writeStatus(http.StatusInternalServerError)
+			return
+		}
+
+		// Ask question to user
 		twilioRes.Add(&twiml.Play{
 			URL:    "/audio-clips/intro.mp3",
 			Digits: "w",
@@ -117,7 +138,7 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			Text:  fmt.Sprintf("What is ,%d. plus ,%d", a, b),
 		})
 		twilioRes.Add(&twiml.Gather{
-			Action:    fmt.Sprintf("/input/test/%d", eq),
+			Action:    fmt.Sprintf("/input/challenge/%d", challenge.ID),
 			NumDigits: 1,
 			Timeout:   10,
 		})
