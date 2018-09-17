@@ -2,38 +2,32 @@ package config
 
 import (
 	"fmt"
-	"os"
+
+	"github.com/kelseyhightower/envconfig"
 )
 
 // Config holds application configuration
 type Config struct {
+	// DBConfig holds database configuration
+	DBConfig
+
 	// DestinationNumber is the phone number callers will be forwarded to if
 	// they pass the challenge
-	DestinationNumber string
+	DestinationNumber string `required:"true" envconfig:"destination_number"`
 
 	// HTTPPort is the port to serve http traffic on, defaults to 8000
-	HTTPPort string
+	HTTPPort string `default:"8000" envconfig:"http_port"`
 }
 
 // LoadConfig loads configuration from the environment
 func LoadConfig() (*Config, error) {
-	// Destination number
-	destNum := os.Getenv("DESTINATION_NUMBER")
+	var cfg Config
 
-	if len(destNum) == 0 {
-		return nil, fmt.Errorf("DESTINATION_NUMBER environment variable must" +
-			"be set")
+	err := envconfig.Process("", &cfg)
+	if err != nil {
+		return nil, fmt.Errorf("error loading configuration from environment"+
+			" variables: %s", err.Error())
 	}
 
-	// HTTP port
-	httpPort := os.Getenv("HTTP_PORT")
-
-	if len(httpPort) == 0 {
-		httpPort = "8000"
-	}
-
-	return &Config{
-		DestinationNumber: destNum,
-		HTTPPort:          httpPort,
-	}, nil
+	return &cfg, nil
 }
