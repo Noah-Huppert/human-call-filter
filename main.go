@@ -50,14 +50,18 @@ func main() {
 
 	// Setup twilio number handler
 	router := mux.NewRouter()
-	router.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "OK")
-	})
-	router.Handle("/call", handlers.NewCallsHandler(logger, db)).
-		Methods("POST")
+
+	routesLogger := logger.GetChild("routes")
+
+	router.Handle("/healthz", handlers.NewHealthHandler(
+		routesLogger.GetChild("health")))
+
+	router.Handle("/call", handlers.NewCallsHandler(
+		routesLogger.GetChild("call"), db)).Methods("POST")
 
 	router.Handle("/input/challenge/{challenge_id}",
-		handlers.NewTestInputHandler(logger, cfg, db)).Methods("POST")
+		handlers.NewTestInputHandler(routesLogger.GetChild("input"), cfg,
+			db)).Methods("POST")
 
 	router.Handle("/audio-clips/{file}.mp3", handlers.NewAudioClipsHandler(logger))
 
