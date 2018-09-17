@@ -63,11 +63,15 @@ func (h TestInputHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		twilioRes.Add(&twiml.Dial{
 			Number: h.cfg.DestinationNumber,
 		})
+
+		h.logger.Debug("caller passed challenge")
 	} else {
 		twilioRes.Add(&twiml.Play{
 			URL:    "/audio-clips/fail.mp3",
 			Digits: "w",
 		})
+
+		h.logger.Debug("caller failed challenge")
 	}
 
 	writeTwilioResp(h.logger, w, twilioRes)
