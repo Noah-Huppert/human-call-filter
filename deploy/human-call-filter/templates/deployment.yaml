@@ -36,12 +36,15 @@ spec:
             - name: "DB_NAME"
               value: {{ .Values.db.name }}
             - name: "DB_USERNAME"
-              value: {{ .Values.db.username }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "human-call-filter.fullname" . }}-cloudsql-instance-credentials
+                  key: username
             - name: "DB_PASSWORD"
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "human-call-filter.fullname" . }}-secrets
-                  key: db_password
+                  name: {{ include "human-call-filter.fullname" . }}-cloudsql-instance-credentials
+                  key: password
           ports:
             - name: http
               containerPort: 80
@@ -54,17 +57,19 @@ spec:
             httpGet:
               path: /healthz
               port: http
-          resources:
-{{ toYaml .Values.resources | indent 12 }}
-    {{- with .Values.nodeSelector }}
-      nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.affinity }}
-      affinity:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
-    {{- end }}
+        - name: cloudsql-proxy
+           image: gcr.io/cloudsql-docker/gce-proxy:1.11
+           command: ["/cloud_sql_proxy",
+                     "-instances=<INSTANCE_CONNECTION_NAME>=tcp:5432",
+                     "-credential_file=/secrets/cloudsql/credentials.json"]
+            securityContext:
+                runAsUser: 2  # non-root user
+                allowPrivilegeEscalation: false
+            volumeMounts:
+                - name: cloudsql-instance-credentials
+                  mountPath: /secrets/cloudsql
+                  readOnly: true
+      volumes:
+        - name: cloudsql-instance-credentials
+          secret:
+            secretName: {{ include "human-call-filter.fullname" . }}-cloudsql-instance-credentials
