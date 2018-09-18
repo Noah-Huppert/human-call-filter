@@ -28,6 +28,12 @@ func Connect(dbCfg config.DBConfig) (*sql.DB, error) {
 			err.Error())
 	}
 
+	// Check connection
+	err = db.Ping()
+	if err != nil {
+		return nil, fmt.Errorf("error checking connection: %s", err.Error())
+	}
+
 	return db, nil
 }
 
