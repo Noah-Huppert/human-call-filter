@@ -2,6 +2,14 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+db:
+  host: "your db host"
+  name: "prod-human-call-filter"
+  username: "prod-human-call-filter"
+  password: "your db password"
+
+destination_number: "your destination number"
+
 replicaCount: 1
 
 image:

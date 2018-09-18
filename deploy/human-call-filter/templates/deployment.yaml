@@ -1,0 +1,70 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "human-call-filter.fullname" . }}
+  labels:
+    app: {{ include "human-call-filter.name" . }}
+    chart: {{ include "human-call-filter.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "human-call-filter.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "human-call-filter.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: "HTTP_PORT"
+              value: "80"
+            - name: "DESTINATION_NUMBER"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "human-call-filter.fullname" . }}-secrets
+                  key: destination_number
+            - name: "DB_HOST"
+              value: {{ .Values.db.host }}
+            - name: "DB_NAME"
+              value: {{ .Values.db.name }}
+            - name: "DB_USERNAME"
+              value: {{ .Values.db.username }}
+            - name: "DB_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "human-call-filter.fullname" . }}-secrets
+                  key: db_password
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
