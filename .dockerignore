@@ -1,0 +1,4 @@
+vendor/
+run-data/
+deploy/
+.*env

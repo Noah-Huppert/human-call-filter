@@ -53,8 +53,7 @@ func main() {
 
 	routesLogger := logger.GetChild("routes")
 
-	router.Handle("/healthz", handlers.NewHealthHandler(
-		routesLogger.GetChild("health")))
+	router.Handle("/healthz", handlers.NewHealthHandler())
 
 	router.Handle("/call", handlers.NewCallsHandler(
 		routesLogger.GetChild("call"), cfg, db)).Methods("POST")
