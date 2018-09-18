@@ -33,6 +33,8 @@ spec:
                   key: destination_number
             - name: "DB_HOST"
               value: {{ .Values.db.host }}
+            - name: "DB_HOST"
+              value: {{ .Values.db.port }}
             - name: "DB_NAME"
               value: {{ .Values.db.name }}
             - name: "DB_USERNAME"

@@ -4,6 +4,7 @@
 
 db:
   host: "your db host"
+  port: "5432"
   name: "prod-human-call-filter"
   username: "prod-human-call-filter"
   password: "your db password"
