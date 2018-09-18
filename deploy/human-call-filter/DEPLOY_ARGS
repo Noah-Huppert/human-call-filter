@@ -1,1 +1,1 @@
---set db.host=$DB_HOST,db.password=$DB_PASSWORD,destination_number=$DESTINATION_NUMBER
+--set db.host="$DB_HOST",db.password="$DB_PASSWORD",destination_number="$DESTINATION_NUMBER"
