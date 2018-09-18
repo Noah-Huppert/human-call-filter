@@ -9,3 +9,6 @@ vendor/
 
 # Local Postgres database
 run-data/
+
+# GCP Postgres Service Account credentials
+*.service-account.json

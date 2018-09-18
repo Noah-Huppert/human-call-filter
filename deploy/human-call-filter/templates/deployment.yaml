@@ -36,14 +36,11 @@ spec:
             - name: "DB_NAME"
               value: {{ .Values.db.name }}
             - name: "DB_USERNAME"
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "human-call-filter.fullname" . }}-cloudsql-instance-credentials
-                  key: username
+              value: {{ .Values.db.username }}
             - name: "DB_PASSWORD"
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "human-call-filter.fullname" . }}-cloudsql-instance-credentials
+                  name: {{ include "human-call-filter.fullname" . }}-secrets
                   key: password
           ports:
             - name: http
