@@ -11,6 +11,10 @@ db:
 
 destination_number: "your destination number"
 
+gcp:
+  cloudsql:
+    connectionName: "nh-k8s:us-central1:postgres"
+
 replicaCount: 1
 
 image:

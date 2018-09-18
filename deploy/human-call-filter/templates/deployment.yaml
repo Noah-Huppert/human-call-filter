@@ -33,8 +33,8 @@ spec:
                   key: destination_number
             - name: "DB_HOST"
               value: {{ .Values.db.host }}
-            - name: "DB_HOST"
-              value: {{ .Values.db.port }}
+            - name: "DB_PORT"
+              value: "{{ .Values.db.port }}"
             - name: "DB_NAME"
               value: {{ .Values.db.name }}
             - name: "DB_USERNAME"
@@ -59,7 +59,7 @@ spec:
         - name: cloudsql-proxy
           image: gcr.io/cloudsql-docker/gce-proxy:1.11
           command: ["/cloud_sql_proxy",
-                     "-instances=nh-k8s:us-central1:postgres=tcp:5432",
+                     "-instances={{ .Values.gcp.cloudsql.connectionName }}=tcp:5432",
                      "-credential_file=/secrets/cloudsql/credentials.json"]
           securityContext:
             runAsUser: 2  # non-root user
