@@ -58,17 +58,17 @@ spec:
               path: /healthz
               port: http
         - name: cloudsql-proxy
-           image: gcr.io/cloudsql-docker/gce-proxy:1.11
-           command: ["/cloud_sql_proxy",
-                     "-instances=<INSTANCE_CONNECTION_NAME>=tcp:5432",
+          image: gcr.io/cloudsql-docker/gce-proxy:1.11
+          command: ["/cloud_sql_proxy",
+                     "-instances=nh-k8s:us-central1:postgres=tcp:5432",
                      "-credential_file=/secrets/cloudsql/credentials.json"]
-            securityContext:
-                runAsUser: 2  # non-root user
-                allowPrivilegeEscalation: false
-            volumeMounts:
-                - name: cloudsql-instance-credentials
-                  mountPath: /secrets/cloudsql
-                  readOnly: true
+          securityContext:
+            runAsUser: 2  # non-root user
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: cloudsql-instance-credentials
+              mountPath: /secrets/cloudsql
+              readOnly: true
       volumes:
         - name: cloudsql-instance-credentials
           secret:
