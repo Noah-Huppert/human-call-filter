@@ -19,4 +19,4 @@ migrate:
 
 # db-cli connects to the local database with the psql command line interface
 db-cli:
-	psql -h localhost -U ${USER} -d ${NAME}
+	psql -h ${DB_HOST} -U ${DB_USERNAME} -d ${DB_NAME}
