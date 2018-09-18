@@ -2,7 +2,7 @@
 vendor/
 
 # Env file
-.env
+.*env
 
 # Helm deploy
 *.tgz
