@@ -18,7 +18,7 @@ func Connect(dbCfg config.DBConfig) (*sql.DB, error) {
 		dbCfg.DBName, dbCfg.DBUsername)
 
 	if len(dbCfg.DBPassword) > 0 {
-		sqlConnStr += fmt.Sprintf("password=%s", dbCfg.DBPassword)
+		sqlConnStr += fmt.Sprintf(" password=%s", dbCfg.DBPassword)
 	}
 
 	// Connect to database

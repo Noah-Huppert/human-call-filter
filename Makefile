@@ -1,7 +1,6 @@
 .PHONY: db migrate db-cli
 
-DB_NAME=dev-human-call-filter
-DB_USER=dev-human-call-filter
+NAME=dev-human-call-filter
 
 # db starts a local database
 db:
@@ -10,8 +9,8 @@ db:
 		--rm \
 		--net host \
 		-v ${PWD}/run-data:/var/lib/postgresql/data \
-		-e POSTGRES_DB=${DB_NAME} \
-		-e POSTGRES_USER=${DB_USER} \
+		-e POSTGRES_DB=${NAME} \
+		-e POSTGRES_USER=${NAME} \
 		postgres
 
 # migrate runs database migrations
@@ -20,4 +19,4 @@ migrate:
 
 # db-cli connects to the local database with the psql command line interface
 db-cli:
-	psql -h localhost -U ${DB_USER} -d ${DB_NAME}
+	psql -h localhost -U ${USER} -d ${NAME}
