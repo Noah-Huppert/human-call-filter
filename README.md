@@ -33,7 +33,10 @@ Human call filter uses environment variables for configuration:
 
 - `DESTINATION_NUMBER`: Your personal phone number which verified humans will 
 	be forwarded to
-- `HTTP_PORT`: Port server responds to requests on, defaults to `8000`
+- `CALLS_HTTP_PORT`: Port server responds to twilio call requests on,
+	defaults to `8000`
+- `DASHBOARD_HTTP_PORT`: Port server responds to internal dashboard request on,
+	defaults to `8001`
 - `DB_HOST`: Postgres connection host
 - `DB_PORT`: Postgres connection port, defaults to `5432`
 - `DB_NAME`: Postgres database name
