@@ -16,10 +16,10 @@ human before forwarding the call to your actual phone.
 
 This technique is able to prevent robot spam calls.  
 
-When a call is made to human call filter operated number a prompt is played 
+When a call is made to the human call filter operated number a prompt is played 
 asking the caller a simple arithmetic question. If the caller enters the 
-correct answer to this arithmetic question their call is forwarded to your 
-actual phone. If they answer the question incorrectly the call will be ended.
+correct answer to their call is forwarded to your actual phone number. If they 
+answer the question incorrectly the call will be ended.
 
 If the same caller calls again they will be immediately forwarded without 
 being tested, since they have already been verified.
@@ -59,12 +59,12 @@ Complete the following steps to setup Twilio:
 4. Configure the number  
   - Under the "Voice" category set the following options:
     - "A call comes in" setting
-	  - First setting to "Webhook" 
-	  - Second setting to "http://<domain you deploy to>/call" and "HTTP POST"
+	  - First setting to `Webhook` 
+	  - Second setting to `http://<domain you deploy to>/call` and `HTTP POST`
 	- " Primary handler fails" setting
-	  - First setting to "TwiML"
+	  - First setting to `TwiML`
 	  - Click the plus button
-	    - Enter "CallDestination" for the "Friendly Name"
+	    - Enter `CallDestination` for the "Friendly Name"
 		- Enter the following text in the main box:
 			```
 			<?xml version="1.0" encoding="UTF-8"?>
