@@ -21,7 +21,7 @@ type Config struct {
 
 	// DashboardHTTPPort is the port the server which serves an internal
 	// dashboard will run on
-	DashboardHTTPPort string `default:"80001" envconfig:"dashboard_http_port"`
+	DashboardHTTPPort string `default:"8001" envconfig:"dashboard_http_port"`
 }
 
 // LoadConfig loads configuration from the environment
