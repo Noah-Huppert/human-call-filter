@@ -44,7 +44,7 @@ func NewServer(logger golog.Logger, cfg *config.Config,
 	router.Handle("/audio-clips/{file}.mp3", audioClipHandler)
 
 	return http.Server{
-		Addr:    fmt.Sprintf(":%s", cfg.HTTPPort),
+		Addr:    fmt.Sprintf(":%s", cfg.CallsHTTPPort),
 		Handler: router,
 	}
 }

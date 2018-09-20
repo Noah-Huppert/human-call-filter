@@ -15,8 +15,9 @@ type Config struct {
 	// they pass the challenge
 	DestinationNumber string `required:"true" envconfig:"destination_number"`
 
-	// HTTPPort is the port to serve http traffic on, defaults to 8000
-	HTTPPort string `default:"8000" envconfig:"http_port"`
+	// CallsHTTPPort is the port the server which responds to twilio calls
+	// will run on
+	CallsHTTPPort string `default:"8000" envconfig:"calls_http_port"`
 }
 
 // LoadConfig loads configuration from the environment
