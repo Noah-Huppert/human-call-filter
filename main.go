@@ -9,8 +9,8 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/Noah-Huppert/human-call-filter/calls"
 	"github.com/Noah-Huppert/human-call-filter/config"
-	"github.com/Noah-Huppert/human-call-filter/handlers"
 	"github.com/Noah-Huppert/human-call-filter/libdb"
 
 	"github.com/Noah-Huppert/golog"
@@ -48,21 +48,21 @@ func main() {
 		logger.Fatalf("error connecting to database: %s", err.Error())
 	}
 
-	// Setup twilio number handler
+	// Setup twilio call handler server
 	router := mux.NewRouter()
 
 	routesLogger := logger.GetChild("routes")
 
-	router.Handle("/healthz", handlers.NewHealthHandler())
+	router.Handle("/healthz", calls.NewHealthHandler())
 
-	router.Handle("/call", handlers.NewCallsHandler(
+	router.Handle("/call", calls.NewCallsHandler(
 		routesLogger.GetChild("call"), cfg, db)).Methods("POST")
 
 	router.Handle("/input/challenge/{challenge_id}",
-		handlers.NewTestInputHandler(routesLogger.GetChild("input"), cfg,
+		calls.NewTestInputHandler(routesLogger.GetChild("input"), cfg,
 			db)).Methods("POST")
 
-	router.Handle("/audio-clips/{file}.mp3", handlers.NewAudioClipsHandler(logger))
+	router.Handle("/audio-clips/{file}.mp3", calls.NewAudioClipsHandler(logger))
 
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.HTTPPort),
