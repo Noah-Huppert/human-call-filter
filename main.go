@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"math/rand"
 	"net/http"
 	"os"
@@ -14,7 +13,6 @@ import (
 	"github.com/Noah-Huppert/human-call-filter/libdb"
 
 	"github.com/Noah-Huppert/golog"
-	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -49,39 +47,21 @@ func main() {
 	}
 
 	// Setup twilio call handler server
-	router := mux.NewRouter()
-
-	routesLogger := logger.GetChild("routes")
-
-	router.Handle("/healthz", calls.NewHealthHandler())
-
-	router.Handle("/call", calls.NewCallsHandler(
-		routesLogger.GetChild("call"), cfg, db)).Methods("POST")
-
-	router.Handle("/input/challenge/{challenge_id}",
-		calls.NewTestInputHandler(routesLogger.GetChild("input"), cfg,
-			db)).Methods("POST")
-
-	router.Handle("/audio-clips/{file}.mp3", calls.NewAudioClipsHandler(logger))
-
-	server := http.Server{
-		Addr:    fmt.Sprintf(":%s", cfg.HTTPPort),
-		Handler: router,
-	}
+	callServer := calls.NewServer(logger, cfg, db)
 
 	go func() {
 		<-ctx.Done()
 
-		err := server.Shutdown(context.Background())
+		err := callServer.Shutdown(context.Background())
 		if err != nil {
-			logger.Fatalf("failed to shutdown http server: %s", err.Error())
+			logger.Fatalf("failed to shutdown http call server: %s", err.Error())
 		}
 	}()
 
-	logger.Debugf("starting http server on %s", server.Addr)
+	logger.Debugf("starting http call server on %s", callServer.Addr)
 
-	err = server.ListenAndServe()
+	err = callServer.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
-		logger.Fatalf("error running http server: %s", err.Error())
+		logger.Fatalf("error running http call server: %s", err.Error())
 	}
 }
