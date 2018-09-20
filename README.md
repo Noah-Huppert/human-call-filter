@@ -9,6 +9,9 @@ Validates that a caller is human before forwarding calls to your phone.
 	- [Configuration](#configuration)
 	- [Database](#database)
 	- [Twilio](#twilio)
+- [Deploy](#deploy)
+	- [Kubernetes](#kubernetes)
+	- [Docker](#docker)
 
 # Overview
 Human call filter operates a separate phone number that verifies callers are 
@@ -74,3 +77,38 @@ Complete the following steps to setup Twilio:
             ```
 			Make sure to replace `Your destination number here` with your 
 			actual phone number.
+
+# Deploy
+## Kubernetes
+A Kubernetes Helm chart is located in the `deploy/human-call-filter/` 
+directory.  
+
+This chart is currently configured to setup my (Noah Huppert) personal instance 
+of human call filter.  
+
+However the chart can be modified to deploy your personal instance. It requires 
+that you have 
+[External DNS](https://github.com/kubernetes-incubator/external-dns) installed 
+on your cluster.  
+
+First edit the `deploy/human-call-filter/values.yaml` file to your liking.  
+
+Then set the `DESTINATION_NUMBER`, `DB_HOST`, and `DB_PASSWORD` environment 
+variables to their production values.  
+
+Next run the following in the repository root:
+
+```
+git submodule init --update
+./deploy/k8s-deploy/k8s-deploy deploy
+```
+
+## Docker
+A Docker image is published which runs the human call filter server.  
+
+The image is named `noahhuppert/human-call-filter`, the container tag is the 
+source code git commit. This will change with every release. Check the Docker 
+hub for the latest tag.  
+
+Run the image by setting all the required environment variables and exposing 
+the correct port for HTTP traffic.
