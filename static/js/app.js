@@ -249,30 +249,44 @@ Vue.component("challenge-row", {
 		<td>{{ challenge.OperandA }}</td>
 		<td>{{ challenge.OperandB }}</td>
 		<td>{{ challenge.Solution }}</td>
-		<td class="tag" v-bind:class="{ 'is-success': isSuccess, 'is-danger': isFailure }">
-			{{ challenge.Status }}
+		<td>
+			<div class="tag"
+				v-bind:class="{ 'is-success': isSuccess, 'is-danger': isFailure, 'is-warning': isAnswering }">
+				{{ challenge.Status }}
+			</div>
 		</td>
 	</tr>`,
 	props: ["challenge", "selected-id"],
 	data: function() {
 		return {
-			isSelected: this.getIsSelected()
+			isSelected: this.getIsSelected(),
+			isSuccess: this.getIsSuccess(),
+			isFailure: this.getIsFailure(),
+			isAnswering: this.getIsAnswering()
 		};
 	},
 	watch: {
 		selectedId: function() {
 			this.isSelected = this.getIsSelected();
+		},
+		challenge: function() {
+			this.isSuccess = this.getIsSuccess();
+			this.isFailure = this.getIsFailure();
+			this.isAnswering = this.getIsAnswering();
 		}
 	},
 	methods: {
 		getIsSelected: function() {
 			return this.challenge.ID == this.selectedId;
 		},
-		isSuccess: function() {
+		getIsSuccess: function() {
 			return this.challenge.Status == "PASSED";
 		},
-		isFailure: function() {
+		getIsFailure: function() {
 			return this.challenge.Status == "FAILED";
+		},
+		getIsAnswering: function() {
+			return this.challenge.Status == "ANSWERING";
 		}
 	}
 });
