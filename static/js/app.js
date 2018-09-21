@@ -249,7 +249,9 @@ Vue.component("challenge-row", {
 		<td>{{ challenge.OperandA }}</td>
 		<td>{{ challenge.OperandB }}</td>
 		<td>{{ challenge.Solution }}</td>
-		<td>{{ challenge.Status }}</td>
+		<td class="tag" v-bind:class="{ 'is-success': isSuccess, 'is-danger': isFailure }">
+			{{ challenge.Status }}
+		</td>
 	</tr>`,
 	props: ["challenge", "selected-id"],
 	data: function() {
@@ -265,6 +267,12 @@ Vue.component("challenge-row", {
 	methods: {
 		getIsSelected: function() {
 			return this.challenge.ID == this.selectedId;
+		},
+		isSuccess: function() {
+			return this.challenge.Status == "PASSED";
+		},
+		isFailure: function() {
+			return this.challenge.Status == "FAILED";
 		}
 	}
 });
