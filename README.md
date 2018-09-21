@@ -5,6 +5,9 @@ Validates that a caller is human before forwarding calls to your phone.
 
 # Table Of Contents
 - [Overview](#overview)
+- [Features](#features)
+	- [Phone Number](#phone-number)
+	- [Dashboard](#dashboard)
 - [Setup](#setup)
 	- [Configuration](#configuration)
 	- [Database](#database)
@@ -19,6 +22,11 @@ human before forwarding the call to your actual phone.
 
 This technique is able to prevent robot spam calls.  
 
+A dashboard is also provided to view information about calls which have been 
+made to the human call filter operated phone number.
+
+# Features
+## Phone Number
 When a call is made to the human call filter operated number a prompt is played 
 asking the caller a simple arithmetic question. If the caller enters the 
 correct answer to their call is forwarded to your actual phone number. If they 
@@ -26,6 +34,26 @@ answer the question incorrectly the call will be ended.
 
 If the same caller calls again they will be immediately forwarded without 
 being tested, since they have already been verified.
+
+## Dashboard
+A dashboard is provided which shows information about calls which have been 
+made to the human call filter operated phone number.
+
+### Phone Numbers Page
+The dashboard shows which numbers have placed calls:
+
+![Dashboard numbers page](/imgs/dashboard-phone-numbers-screenshot.png)
+
+### Phone Calls Page
+The dashboard shows all the calls which have been received:
+
+![Dashboard calls page](/imgs/dashboard-phone-calls-screenshot.png)
+
+### Challenges Page
+The dashboard shows the status of all the challenges which have been issued to 
+users.  
+
+![Dashboard challenges page](/imgs/dashboard-challenges-screenshot.png)
 
 # Setup
 ## Configuration
@@ -114,4 +142,8 @@ source code git commit. This will change with every release. Check the Docker
 hub for the latest tag.  
 
 Run the image by setting all the required environment variables and exposing 
-the correct port for HTTP traffic.
+the correct port for call HTTP traffic.  
+
+Make sure to not expose the dashboard HTTP port, as this shows private 
+information without requiring authentication. Instead The dashboard port should 
+be accessed via a private network.
