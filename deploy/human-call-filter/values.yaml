@@ -2,6 +2,8 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Human call filter specific configuration
+# ... Database
 db:
   host: "your db host"
   port: "5432"
@@ -9,12 +11,17 @@ db:
   username: "prod-human-call-filter"
   password: "your db password"
 
-destination_number: "your destination number"
+# ... Voice over IP
+voip:
+    address: "your VOIP address"
 
+# ... Google Cloud Platform, Postgres hosting
 gcp:
   cloudsql:
+    enabled: true
     connectionName: "nh-k8s:us-central1:postgres"
 
+# General deployment configuration
 replicaCount: 1
 
 image:

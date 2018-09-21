@@ -26,11 +26,11 @@ spec:
           env:
             - name: "CALLS_HTTP_PORT"
               value: "80"
-            - name: "DESTINATION_NUMBER"
+            - name: "DESTINATION"
               valueFrom:
                 secretKeyRef:
                   name: {{ include "human-call-filter.fullname" . }}-secrets
-                  key: destination_number
+                  key: voip_address
             - name: "DB_HOST"
               value: {{ .Values.db.host }}
             - name: "DB_PORT"
@@ -43,7 +43,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "human-call-filter.fullname" . }}-secrets
-                  key: password
+                  key: db_password
           ports:
             - name: calls
               containerPort: 80
@@ -65,6 +65,7 @@ spec:
             httpGet:
               path: /healthz
               port: dashboard
+{{- if .Values.gcp.cloudsql.enabled -}}
         - name: cloudsql-proxy
           image: gcr.io/cloudsql-docker/gce-proxy:1.11
           command: ["/cloud_sql_proxy",
@@ -81,3 +82,4 @@ spec:
         - name: cloudsql-instance-credentials
           secret:
             secretName: {{ include "human-call-filter.fullname" . }}-cloudsql-instance-credentials
+{{- end }}
