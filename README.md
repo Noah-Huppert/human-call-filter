@@ -29,7 +29,7 @@ made to the human call filter operated phone number.
 ## Phone Number
 When a call is made to the human call filter operated number a prompt is played 
 asking the caller a simple arithmetic question. If the caller enters the 
-correct answer to their call is forwarded to your actual phone number. If they 
+correct answer, their call is forwarded to your actual phone number. If they 
 answer the question incorrectly the call will be ended.
 
 If the same caller calls again they will be immediately forwarded without 
