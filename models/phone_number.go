@@ -28,6 +28,32 @@ type PhoneNumber struct {
 	ZipCode string `db:"zip_code"`
 }
 
+// QueryAllPhoneNumbers retrieves a list of all the phone numbers in the
+// database.
+func QueryAllPhoneNumbers(db *sqlx.DB) ([]PhoneNumber, error) {
+	numbers := []PhoneNumber{}
+
+	rows, err := db.Queryx("SELECT * FROM phone_numbers")
+	if err != nil {
+		return numbers, fmt.Errorf("error executing query: %s",
+			err.Error())
+	}
+
+	for row := range rows {
+		number := PhoneNumber{}
+
+		err = row.StructScan(&number)
+		if err != nil {
+			return []PhoneNumber{}, fmt.Errorf("error scanning row into "+
+				"struct: %s", err.Error())
+		}
+
+		numbers = append(numbers, number)
+	}
+
+	return numbers, nil
+}
+
 // QueryByNumber attempts to find a row in the phone numbers table a matching
 // Number value.
 //
