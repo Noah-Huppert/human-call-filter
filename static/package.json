@@ -1,0 +1,19 @@
+{
+  "name": "human-call-filter-dashboard",
+  "version": "0.1.0",
+  "description": "Human call filter dashboard",
+  "main": "n/a",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Noah-Huppert/human-call-filter.git"
+  },
+  "author": "Noah Huppert",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Noah-Huppert/human-call-filter/issues"
+  },
+  "homepage": "https://github.com/Noah-Huppert/human-call-filter#readme"
+}

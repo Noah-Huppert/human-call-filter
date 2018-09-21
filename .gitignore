@@ -12,3 +12,6 @@ run-data/
 
 # GCP Postgres Service Account credentials
 *.service-account.json
+
+# Frontend libraries
+static/node_modules
