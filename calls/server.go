@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Noah-Huppert/human-call-filter/config"
+	"github.com/Noah-Huppert/human-call-filter/handlers"
 
 	"github.com/Noah-Huppert/golog"
 	"github.com/gorilla/mux"
@@ -20,7 +21,7 @@ func NewServer(logger golog.Logger, cfg *config.Config,
 	routesLogger := logger.GetChild("call-routes")
 
 	// Health check handler
-	healthHandler := NewHealthHandler()
+	healthHandler := handlers.NewHealthHandler()
 
 	router.Handle("/healthz", healthHandler)
 

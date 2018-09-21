@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Noah-Huppert/human-call-filter/handlers"
+
 	"github.com/Noah-Huppert/golog"
 	"github.com/Noah-Huppert/human-call-filter/config"
 	"github.com/gorilla/mux"
@@ -18,6 +20,11 @@ func NewServer(logger golog.Logger, cfg *config.Config,
 	routeLogger := logger.GetChild("dashboard-routes")
 
 	router := mux.NewRouter()
+
+	// Health check handler
+	healthHandler := handlers.NewHealthHandler()
+
+	router.Handle("/healthz", healthHandler)
 
 	// Phone numbers handler
 	phoneNumbersLogger := routeLogger.GetChild("phone-numbers")
