@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Noah-Huppert/human-call-filter#readme",
   "dependencies": {
-    "bulma": "^0.7.1"
+    "bulma": "^0.7.1",
+    "vue": "^2.5.17"
   }
 }
