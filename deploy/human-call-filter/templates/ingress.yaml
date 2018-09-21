@@ -31,6 +31,6 @@ spec:
         paths:
           - backend: 
               serviceName: {{ $fullName }}
-              servicePort: http
+              servicePort: calls
   {{- end }}
 {{- end }}

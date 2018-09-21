@@ -10,10 +10,15 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
+    - port: {{ .Values.service.ports.calls }}
+      targetPort: calls
       protocol: TCP
-      name: http
+      name: calls
+    - port: {{ .Values.service.ports.dashboard }}
+      targetPort: dashboard
+      protocol: TCP
+      name: dashboard
+
   selector:
     app: {{ include "human-call-filter.name" . }}
     release: {{ .Release.Name }}

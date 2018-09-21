@@ -27,7 +27,9 @@ fullnameOverride: ""
 
 service:
   type: NodePort
-  port: 80
+  ports:
+    calls: 80
+    dashboard: 8001
 
 ingress:
   enabled: true

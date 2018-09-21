@@ -24,7 +24,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: "HTTP_PORT"
+            - name: "CALLS_HTTP_PORT"
               value: "80"
             - name: "DESTINATION_NUMBER"
               valueFrom:
@@ -45,17 +45,26 @@ spec:
                   name: {{ include "human-call-filter.fullname" . }}-secrets
                   key: password
           ports:
-            - name: http
+            - name: calls
               containerPort: 80
+              protocol: TCP
+            - name: dashboard
+              containerPort: 8001
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /healthz
-              port: http
+              port: calls
+            httpGet:
+              path: /healthz
+              port: dashboard
           readinessProbe:
             httpGet:
               path: /healthz
-              port: http
+              port: calls
+            httpGet:
+              path: /healthz
+              port: dashboard
         - name: cloudsql-proxy
           image: gcr.io/cloudsql-docker/gce-proxy:1.11
           command: ["/cloud_sql_proxy",
