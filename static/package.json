@@ -1,0 +1,24 @@
+{
+  "name": "human-call-filter-dashboard",
+  "version": "0.1.0",
+  "description": "Human call filter dashboard",
+  "main": "n/a",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Noah-Huppert/human-call-filter.git"
+  },
+  "author": "Noah Huppert",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Noah-Huppert/human-call-filter/issues"
+  },
+  "homepage": "https://github.com/Noah-Huppert/human-call-filter#readme",
+  "dependencies": {
+    "bulma": "^0.7.1",
+    "vue": "^2.5.17",
+    "vue-router": "^3.0.1"
+  }
+}

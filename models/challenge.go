@@ -19,6 +19,32 @@ const (
 	ChallengeStatusPassed string = "PASSED"
 )
 
+// QueryAllChallenges retrieves a list of all the challenges in the
+// database.
+func QueryAllChallenges(db *sqlx.DB) ([]Challenge, error) {
+	challenges := []Challenge{}
+
+	rows, err := db.Queryx("SELECT * FROM challenges")
+	if err != nil {
+		return challenges, fmt.Errorf("error executing query: %s",
+			err.Error())
+	}
+
+	for rows.Next() {
+		challenge := Challenge{}
+
+		err = rows.StructScan(&challenge)
+		if err != nil {
+			return []Challenge{}, fmt.Errorf("error scanning row into "+
+				"struct: %s", err.Error())
+		}
+
+		challenges = append(challenges, challenge)
+	}
+
+	return challenges, nil
+}
+
 // Challenge holds information about a question asked to a caller. Used to
 // verify if the caller is human or not.
 type Challenge struct {

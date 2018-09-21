@@ -9,12 +9,12 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/Noah-Huppert/human-call-filter/calls"
 	"github.com/Noah-Huppert/human-call-filter/config"
-	"github.com/Noah-Huppert/human-call-filter/handlers"
+	"github.com/Noah-Huppert/human-call-filter/dashboard"
 	"github.com/Noah-Huppert/human-call-filter/libdb"
 
 	"github.com/Noah-Huppert/golog"
-	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -48,40 +48,105 @@ func main() {
 		logger.Fatalf("error connecting to database: %s", err.Error())
 	}
 
-	// Setup twilio number handler
-	router := mux.NewRouter()
+	// waitChan is used to wait for http servers to shut down, a nil on the
+	// channel is a success. Otherwise the shutdown error is sent.
+	waitChan := make(chan WaitEntry)
 
-	routesLogger := logger.GetChild("routes")
+	totalWaitEntries := 2
+	receivedWaitEntries := 0
 
-	router.Handle("/healthz", handlers.NewHealthHandler())
+	// Setup twilio call handler server
+	callServer := calls.NewServer(logger, cfg, db)
 
-	router.Handle("/call", handlers.NewCallsHandler(
-		routesLogger.GetChild("call"), cfg, db)).Methods("POST")
+	shutdownHTTPServerOnExit("calls", ctx, waitChan, &callServer)
 
-	router.Handle("/input/challenge/{challenge_id}",
-		handlers.NewTestInputHandler(routesLogger.GetChild("input"), cfg,
-			db)).Methods("POST")
+	logger.Debugf("starting calls http server on %s", callServer.Addr)
+	startHTTPServer("calls", waitChan, &callServer)
 
-	router.Handle("/audio-clips/{file}.mp3", handlers.NewAudioClipsHandler(logger))
+	// Setup dashboard server
+	dashboardServer := dashboard.NewServer(logger, cfg, db)
 
-	server := http.Server{
-		Addr:    fmt.Sprintf(":%s", cfg.HTTPPort),
-		Handler: router,
+	shutdownHTTPServerOnExit("dashboard", ctx, waitChan, &dashboardServer)
+
+	logger.Debugf("starting dashboard http server on %s", dashboardServer.Addr)
+	startHTTPServer("dashboard", waitChan, &dashboardServer)
+
+	// Wait for servers to exit
+	ctxDone := false
+
+	for receivedWaitEntries < totalWaitEntries {
+		select {
+		case <-ctx.Done():
+			ctxDone = true
+
+		case waitEntry := <-waitChan:
+			if waitEntry.err != nil {
+				logger.Errorf("error running %s: %s", waitEntry.name, err.Error())
+
+				// Cancel context if not canceled already, so that other jobs
+				// shut down
+				if !ctxDone {
+					cancelFn()
+				}
+			} else {
+				logger.Debugf("%s successfully completed", waitEntry.name)
+			}
+
+			receivedWaitEntries++
+		}
 	}
+}
+
+// WaitEntry holds information about the status of an asynchronous job
+type WaitEntry struct {
+	// name identifies the job
+	name string
+
+	// err holds an error if one occurs while running the job, nil if the job
+	// completed successfully
+	err error
+}
+
+// startHTTPServer starts an http server in a go routine and exits if there is
+// an error.
+//
+// The name argument is used to identify the http server if an error occurs.
+func startHTTPServer(name string, waitChan chan<- WaitEntry, server *http.Server) {
+	go func() {
+		err := server.ListenAndServe()
+
+		if err != nil && err != http.ErrServerClosed {
+			waitChan <- WaitEntry{
+				name: name,
+				err:  fmt.Errorf("error running http server: %s", err.Error()),
+			}
+		}
+	}()
+}
+
+// shutdownHTTPServerOnExit starts a go routine which waits for a Context to
+// close and then gracefully shuts down an http.Server.
+//
+// The name argument will be used to identify the http server if an error
+// occurs.
+func shutdownHTTPServerOnExit(name string, ctx context.Context,
+	waitChan chan<- WaitEntry, server *http.Server) {
 
 	go func() {
 		<-ctx.Done()
 
 		err := server.Shutdown(context.Background())
 		if err != nil {
-			logger.Fatalf("failed to shutdown http server: %s", err.Error())
+			waitChan <- WaitEntry{
+				name: name,
+				err: fmt.Errorf("failed to shutdown the http server: %s",
+					err.Error()),
+			}
+		}
+
+		waitChan <- WaitEntry{
+			name: name,
+			err:  nil,
 		}
 	}()
-
-	logger.Debugf("starting http server on %s", server.Addr)
-
-	err = server.ListenAndServe()
-	if err != nil && err != http.ErrServerClosed {
-		logger.Fatalf("error running http server: %s", err.Error())
-	}
 }

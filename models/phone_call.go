@@ -23,6 +23,32 @@ type PhoneCall struct {
 	DateReceived time.Time `db:"date_received"`
 }
 
+// QueryAllPhoneCalls retrieves a list of all the phone calls in the
+// database.
+func QueryAllPhoneCalls(db *sqlx.DB) ([]PhoneCall, error) {
+	calls := []PhoneCall{}
+
+	rows, err := db.Queryx("SELECT * FROM phone_calls")
+	if err != nil {
+		return calls, fmt.Errorf("error executing query: %s",
+			err.Error())
+	}
+
+	for rows.Next() {
+		call := PhoneCall{}
+
+		err = rows.StructScan(&call)
+		if err != nil {
+			return []PhoneCall{}, fmt.Errorf("error scanning row into "+
+				"struct: %s", err.Error())
+		}
+
+		calls = append(calls, call)
+	}
+
+	return calls, nil
+}
+
 // Insert adds a phone call row to the phone calls database. The ID field is
 // updated with the inserted row's ID.
 func (c *PhoneCall) Insert(db *sqlx.DB) error {
