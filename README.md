@@ -13,6 +13,7 @@ IP) number.
 	- [Configuration](#configuration)
 	- [Database](#database)
 	- [Twilio](#twilio)
+	- [Voice Over IP](#voice-over-ip)
 - [Deploy](#deploy)
 	- [Kubernetes](#kubernetes)
 	- [Docker](#docker)
@@ -134,6 +135,8 @@ Then configure the number:
 				actual phone number.  
 
 				This will forward calls to your phone if an error occurs.
+		- Make sure the box above the plus button you just clicked is set to 
+			`CallDestination`
 
 ### Elastic SIP Trunking
 Navigate to the "Elastic SIP Trunking" dashboard.  
@@ -166,6 +169,38 @@ Finally configure a domain for the SIP trunk to serve requests from:
 	- Under the "SIP Registration" section set the "Credential Lists" option 
 		to the credentials list your created above
 
+## Voice Over IP
+Human call filter will forward calls which it knows are from humans to a voice 
+over IP number.  
+
+This lets you be confident that every call that comes into this number is a 
+human and not a spam robot caller.  
+
+In order to receive calls with this VOIP number you must install and configure 
+a VOIP application on your phone.  
+
+If you are using an Android phone I recommend you use the 
+[Zoiper](https://play.google.com/store/apps/details?id=com.zoiper.android.app) 
+VOIP application. Unfortunately I do not have experience with VOIP applications 
+on iPhones so I can not make a recommendation.
+
+On your phone in the VOIP application of your choice add a new VOIP account:
+
+1. Set the host to:
+    ```
+	sip_sub_domain.sip.us1.twilio.com
+	```
+
+	Replace `sip_sub_domain` with the sub domain you set when configuring 
+	the Twilio Elastic SIP Trunking domain name
+2. Set the username to the username you set while configuring the Twilio 
+	Elastic SIP Trunking Credentials List
+3. Set the password to the password you set while configuring the Twilio
+	Elastic SIP Trunking Credentials List
+
+With your new VOIP number configured you can now begin receiving VOIP calls 
+on your phone.
+		
 # Deploy
 ## Kubernetes
 A Kubernetes Helm chart is located in the `deploy/human-call-filter/` 
@@ -218,5 +253,5 @@ Run the image by setting
 correct port for call HTTP traffic.  
 
 Make sure to not expose the dashboard HTTP port, as this shows private 
-information without requiring authentication. Instead The dashboard port should 
+information without requiring authentication. Instead the dashboard port should 
 be accessed via a private network.
