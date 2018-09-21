@@ -19,9 +19,19 @@ func NewServer(logger golog.Logger, cfg *config.Config,
 
 	router := mux.NewRouter()
 
-	// File server
-	router.Handle("/api/phone_numbers", NewPhoneNumbersHandler(routeLogger, db))
+	// Phone numbers handler
+	phoneNumbersLogger := routeLogger.GetChild("phone-numbers")
+	phoneNumbersHandler := NewPhoneNumbersHandler(phoneNumbersLogger, db)
 
+	router.Handle("/api/phone_numbers", phoneNumbersHandler)
+
+	// Phone calls handler
+	phoneCallsLogger := routeLogger.GetChild("phone-calls")
+	phoneCallsHandler := NewPhoneCallsHandler(phoneCallsLogger, db)
+
+	router.Handle("/api/phone_calls", phoneCallsHandler)
+
+	// File server
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("static")))
 
 	return http.Server{
