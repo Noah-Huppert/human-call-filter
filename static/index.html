@@ -9,29 +9,19 @@
 
 	<body>
 		<div id="app">
-			<nav class="navbar is-primary" role="navigation" aria-label="main navigation">
-				<div class="navbar-brand">
-					<div class="navbar-item">Human Call Filter</div>	
-					<a role="button" class="navbar-burger" v-on:click="toggleNavbarMenu">
-						<span></span>
-						<span></span>
-						<span></span>
-					</a>		
-				</div>
+			<nav class="navbar is-primary" role="navigation" aria-label="main navigation">		
+				<navbar-brand></navbar-brand>
 
-				<div id="nav-menu" class="navbar-menu">
-					<div class="navbar-end">
-						<div class="navbar-item">
-							Links
-						</div>
-					</div>
-				</div>
+				<navbar-menu></navbar-menu>
 			</nav>
 
-			{{ hello }}
+			<div class="section">
+				<router-view></router-view>
+			</div>
 		</div>
 
 		<script src="/node_modules/vue/dist/vue.min.js"></script>
+		<script src="/node_modules/vue-router/dist/vue-router.min.js"></script>
 		<script src="/js/app.js"></script>
 	</body>
 </html>
