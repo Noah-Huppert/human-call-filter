@@ -6,7 +6,7 @@ RUN mkdir -p "$APP_DIR"
 WORKDIR "$APP_DIR"
 
 # Prequisits
-RUN apk --update add curl git nodejs
+RUN apk --update add curl git nodejs nodejs-npm
 RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
 # Source code
