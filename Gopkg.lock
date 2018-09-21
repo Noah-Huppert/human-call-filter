@@ -2,10 +2,10 @@
 
 
 [[projects]]
+  branch = "master"
   name = "github.com/BTBurke/twiml"
   packages = ["."]
-  revision = "add3434d53142d03c80de19454f65f44a0ff04ef"
-  version = "v1.0.0"
+  revision = "ea9a69c6d6fbe1eb4387bd396754188819acc757"
 
 [[projects]]
   name = "github.com/Noah-Huppert/golog"
@@ -58,6 +58,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7fe320071409b828a0a78cf0390437efaa0d6ac7a0dbde2d4e0629bfd38b8650"
+  inputs-digest = "70af969531d9317c48d6fb30996892a5c0a2b6f524694906baa756a31e908af3"
   solver-name = "gps-cdcl"
   solver-version = 1

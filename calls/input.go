@@ -123,9 +123,14 @@ func (h TestInputHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			URL:    "/audio-clips/success.mp3",
 			Digits: "w",
 		})
-		twilioRes.Add(&twiml.Dial{
-			Number: h.cfg.DestinationNumber,
+
+		dial := &twiml.Dial{}
+
+		dial.Add(&twiml.Sip{
+			Address: h.cfg.Destination,
 		})
+
+		twilioRes.Add(dial)
 
 		h.logger.Debug("caller passed challenge")
 	} else {

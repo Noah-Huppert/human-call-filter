@@ -125,9 +125,12 @@ func (h CallsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	case twiml.Ringing, twiml.Queued:
 		if alreadyVerified {
-			twilioRes.Add(&twiml.Dial{
-				Number: h.cfg.DestinationNumber,
+			dial := &twiml.Dial{}
+
+			dial.Add(&twiml.Sip{
+				Address: h.cfg.Destination,
 			})
+			twilioRes.Add(dial)
 
 			h.logger.Debug("already verified")
 		} else {

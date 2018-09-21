@@ -11,9 +11,9 @@ type Config struct {
 	// DBConfig holds database configuration
 	DBConfig
 
-	// DestinationNumber is the phone number callers will be forwarded to if
-	// they pass the challenge
-	DestinationNumber string `required:"true" envconfig:"destination_number"`
+	// Destination is the VOIP identity callers will be forwarded to if they
+	// pass the challenge
+	Destination string `required:"true" envconfig:"destination"`
 
 	// CallsHTTPPort is the port the server which responds to twilio calls
 	// will run on
