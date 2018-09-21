@@ -31,6 +31,12 @@ func NewServer(logger golog.Logger, cfg *config.Config,
 
 	router.Handle("/api/phone_calls", phoneCallsHandler)
 
+	// Challenges handler
+	challengesLogger := routeLogger.GetChild("challenges")
+	challengesHandler := NewChallengesHandler(challengesLogger, db)
+
+	router.Handle("/api/challenges", challengesHandler)
+
 	// File server
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("static")))
 
