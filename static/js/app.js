@@ -45,6 +45,12 @@ Vue.component("navbar-menu", {
 							Calls
 						</router-link>
 					</li>
+					<li v-on:click="closeNavbarMenu">
+						<router-link to="/challenges">
+							Challenges
+						</router-link>
+					</li>
+
 				</ul>
 			</div>
 		</div>
@@ -193,6 +199,81 @@ Vue.component("phone-call-row", {
 	}
 });
 
+const challengesPage = Vue.component("challenges-page", {
+	template: `<div class="container">
+		<h1 class="title">Challenges</h1>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Phone Call ID</th>
+					<th>Date Asked</th>
+					<th>Operand A</th>
+					<th>Operand B</th>
+					<th>Solution</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				<challenge-row v-for="challenge in challenges"
+					v-bind:challenge="challenge"
+					v-bind:selected-id="id">
+				</challenge-row>
+			</tbody>
+		</table>
+	</div>`,
+	props: {
+		id: undefined
+	},
+	data: function() {
+		return {
+			challenges: this.challenges
+		};
+	},
+	created: function() {
+		this.challenges = [];
+		var self = this;
+
+		makeAPIRequest("/api/challenges", "GET")
+			.then(function(resp) {
+				self.challenges = resp.challenges;
+			});
+	}
+});
+
+Vue.component("challenge-row", {
+	template: `<tr v-bind:class="{ selected: isSelected }">
+		<td>{{ challenge.ID }}</td>
+		<td>
+			<router-link v-bind:to="'/calls?id=' + challenge.PhoneCallID">
+				{{ challenge.PhoneCallID }}
+			</router-link>
+		</td>
+		<td>{{ challenge.DateAsked }}</td>
+		<td>{{ challenge.OperandA }}</td>
+		<td>{{ challenge.OperandB }}</td>
+		<td>{{ challenge.Solution }}</td>
+		<td>{{ challenge.Status }}</td>
+	</tr>`,
+	props: ["challenge", "selected-id"],
+	data: function() {
+		return {
+			isSelected: this.getIsSelected()
+		};
+	},
+	watch: {
+		selectedId: function() {
+			this.isSelected = this.getIsSelected();
+		}
+	},
+	methods: {
+		getIsSelected: function() {
+			return this.challenge.ID == this.selectedId;
+		}
+	}
+});
+
 /* Router */
 const router = new VueRouter({
 	routes: [
@@ -212,6 +293,15 @@ const router = new VueRouter({
 		{
 			path: "/calls",
 			component: phoneCallsPage,
+			props: function(route) {
+				return {
+					id: route.query.id
+				};
+			}
+		},
+		{
+			path: "/challenges",
+			component: challengesPage,
 			props: function(route) {
 				return {
 					id: route.query.id
