@@ -53,6 +53,7 @@ const numbersPage = Vue.component("numbers-page", {
 /* Router */
 const router = new VueRouter({
 	routes: [
+		{ path: "/", redirect: "/numbers" },
 		{ path: "/numbers", component: numbersPage }
 	]
 });
