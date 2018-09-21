@@ -44,9 +44,9 @@ Vue.component("navbar-menu", {
 });
 
 /* Pages */
-const numbersPage = Vue.component("numbers-page", {
+const phoneNumbersPage = Vue.component("phone-numbers-page", {
 	template: `<div class="container">
-		<h1 class="title">Numbers</h1>
+		<h1 class="title">Phone Numbers</h1>
 	</div>`
 });
 
@@ -54,7 +54,7 @@ const numbersPage = Vue.component("numbers-page", {
 const router = new VueRouter({
 	routes: [
 		{ path: "/", redirect: "/numbers" },
-		{ path: "/numbers", component: numbersPage }
+		{ path: "/numbers", component: phoneNumbersPage }
 	]
 });
 
