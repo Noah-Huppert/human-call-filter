@@ -14,6 +14,7 @@ func writeJSON(logger golog.Logger, w http.ResponseWriter, status int,
 
 	encoder := json.NewEncoder(w)
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 
 	err := encoder.Encode(data)

@@ -1,5 +1,12 @@
 Vue.config.devtools = true;
 
+/* API */
+function makeAPIRequest(path, method) {
+	return fetch(path, {
+		method: method
+	}).then(res => res.json());
+}
+
 /* Navigation */
 function toggleNavbarMenu() {
 	document.getElementById("nav-menu").classList.toggle("is-active");
@@ -47,7 +54,44 @@ Vue.component("navbar-menu", {
 const phoneNumbersPage = Vue.component("phone-numbers-page", {
 	template: `<div class="container">
 		<h1 class="title">Phone Numbers</h1>
-	</div>`
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Number</th>
+					<th>Name</th>
+					<th>State</th>
+					<th>City</th>
+					<th>Zip Code</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="number in phoneNumbers">
+					<td>{{ number.ID }}</td>
+					<td>{{ number.Number }}</td>
+					<td>{{ number.Name }}</td>
+					<td>{{ number.State }}</td>
+					<td>{{ number.City }}</td>
+					<td>{{ number.ZipCode }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>`,
+	data: function() {
+		return {
+			phoneNumbers: this.phoneNumbers
+		};
+	},
+	created: function() {
+		this.phoneNumbers = [];
+		var self = this;
+
+		makeAPIRequest("/api/phone_numbers", "GET")
+			.then(function(resp) {
+				self.phoneNumbers = resp.phone_numbers;
+			});
+	}
 });
 
 /* Router */
@@ -61,7 +105,5 @@ const router = new VueRouter({
 /* Root */
 var app = new Vue({
 	el: "#app",
-	router: router,
-	data: {
-	},
+	router: router
 });
