@@ -2,3 +2,4 @@ vendor/
 run-data/
 deploy/
 .*env
+node_modules/
