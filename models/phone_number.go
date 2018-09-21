@@ -39,10 +39,10 @@ func QueryAllPhoneNumbers(db *sqlx.DB) ([]PhoneNumber, error) {
 			err.Error())
 	}
 
-	for row := range rows {
+	for rows.Next() {
 		number := PhoneNumber{}
 
-		err = row.StructScan(&number)
+		err = rows.StructScan(&number)
 		if err != nil {
 			return []PhoneNumber{}, fmt.Errorf("error scanning row into "+
 				"struct: %s", err.Error())

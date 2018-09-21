@@ -64,7 +64,7 @@ func main() {
 	startHTTPServer("calls", waitChan, &callServer)
 
 	// Setup dashboard server
-	dashboardServer := dashboard.NewServer(cfg)
+	dashboardServer := dashboard.NewServer(logger, cfg, db)
 
 	shutdownHTTPServerOnExit("dashboard", ctx, waitChan, &dashboardServer)
 
