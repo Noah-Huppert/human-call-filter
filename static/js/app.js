@@ -33,25 +33,20 @@ Vue.component("navbar-brand", {
 Vue.component("navbar-menu", {
 	template: `<div id="nav-menu" class="navbar-menu">
 		<div class="navbar-end">
-			<div class="navbar-item">
-				<ul>
-					<li v-on:click="closeNavbarMenu">
-						<router-link to="/numbers">
-							Numbers
-						</router-link>
-					</li>
-					<li v-on:click="closeNavbarMenu">
-						<router-link to="/calls">
-							Calls
-						</router-link>
-					</li>
-					<li v-on:click="closeNavbarMenu">
-						<router-link to="/challenges">
-							Challenges
-						</router-link>
-					</li>
-
-				</ul>
+			<div class="navbar-item" v-on:click="closeNavbarMenu">
+				<router-link to="/numbers">
+					Numbers
+				</router-link>
+			</div>
+			<div class="navbar-item" v-on:click="closeNavbarMenu">
+				<router-link to="/calls">
+					Calls
+				</router-link>
+			</div>
+			<div class="navbar-item" v-on:click="closeNavbarMenu">
+				<router-link to="/challenges">
+					Challenges
+				</router-link>
 			</div>
 		</div>
 	</div>`,
