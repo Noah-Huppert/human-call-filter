@@ -26,14 +26,14 @@ func QueryAllChallenges(db *sqlx.DB) ([]Challenge, error) {
 
 	rows, err := db.Queryx("SELECT * FROM challenges")
 	if err != nil {
-		return calls, fmt.Errorf("error executing query: %s",
+		return challenges, fmt.Errorf("error executing query: %s",
 			err.Error())
 	}
 
 	for rows.Next() {
 		challenge := Challenge{}
 
-		err = rows.StructScan(&call)
+		err = rows.StructScan(&challenge)
 		if err != nil {
 			return []Challenge{}, fmt.Errorf("error scanning row into "+
 				"struct: %s", err.Error())
