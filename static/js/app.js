@@ -68,6 +68,11 @@ Vue.component("navbar-menu", {
 	template: `<div id="nav-menu" class="navbar-menu">
 		<div class="navbar-end">
 			<div class="navbar-item" v-on:click="closeNavbarMenu">
+				<router-link to="/overview">
+					Overview
+				</router-link>
+			</div>
+			<div class="navbar-item" v-on:click="closeNavbarMenu">
 				<router-link to="/numbers">
 					Numbers
 				</router-link>
@@ -110,6 +115,29 @@ Vue.component("data-table", {
 		</table>
 	</div>`,
 	props: ["title", "items", "header-names", "row-component", "selected-id"]
+});
+
+Vue.component("chart", {
+	template: `<canvas ref="canvas"></canvas>`,
+	props: ["config"],
+	mounted: function() {
+		this.chart = new Chart(this.$refs.canvas, this.config);
+	}
+});
+
+/* Overview page */
+const overviewPage = Vue.component("overview-page", {
+	template: `<div class="container">
+		<chart v-bind:config="chartConfig"></chart>
+	</div>`,
+	computed: {
+		chartConfig: function() {
+			return {
+				type: "line",
+				data: [1,2]
+			};
+		}
+	}
 });
 
 /* Phone numbers page */
@@ -267,7 +295,11 @@ const router = new VueRouter({
 	routes: [
 		{
 			path: "/",
-			redirect: "/numbers"
+			redirect: "/overview"
+		},
+		{
+			path: "/overview",
+			component: overviewPage
 		},
 		{
 			path: "/numbers",
