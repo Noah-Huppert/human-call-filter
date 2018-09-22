@@ -28,6 +28,18 @@ type PhoneNumber struct {
 	ZipCode string `db:"zip_code"`
 }
 
+// QueryPhoneNumbersCount retrieves the number of phone numbers in the database
+func QueryPhoneNumbersCount(db *sqlx.DB) (int, error) {
+	var count int
+
+	err := db.QueryRow("SELECT COUNT(1) FROM phone_numbers").Scan(&count)
+	if err != nil {
+		return 0, fmt.Errorf("error executing query: %s", err.Error())
+	}
+
+	return count, nil
+}
+
 // QueryAllPhoneNumbers retrieves a list of all the phone numbers in the
 // database.
 func QueryAllPhoneNumbers(db *sqlx.DB) ([]PhoneNumber, error) {
