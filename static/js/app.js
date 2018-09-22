@@ -55,36 +55,46 @@ Vue.component("navbar-menu", {
 	}
 });
 
-/* Pages */
-const phoneNumbersPage = Vue.component("phone-numbers-page", {
+/* Components */
+Vue.component("data-table", {
 	template: `<div class="container">
-		<h1 class="title">Phone Numbers</h1>
+		<h1 class="title">{{ title }}</h1>
 
 		<table class="table">
 			<thead>
 				<tr>
-					<th>ID</th>
-					<th>Number</th>
-					<th>Name</th>
-					<th>State</th>
-					<th>City</th>
-					<th>Zip Code</th>
+					<th v-for="name in headerNames">{{ name }}</th>
 				</tr>
 			</thead>
 			<tbody>
-				<phone-number-row v-for="number in phoneNumbers"
-					v-bind:number="number"
-					v-bind:selected-id="id">
-				</phone-number-row>
+				<component v-for="item in items"
+					v-bind:is="rowComponent"
+					v-bind:item="item"
+					v-bind:class="[item.ID == selectedId ? 'selected' : '']">
+				<component>
 			</tbody>
 		</table>
 	</div>`,
+	props: ["title", "items", "header-names", "row-component", "selected-id"]
+});
+
+/* Phone numbers page */
+const phoneNumbersPage = Vue.component("phone-numbers-page", {
+	template: `<div class="container">
+		<data-table title="Phone Numbers"
+			v-bind:items="phoneNumbers"
+			v-bind:header-names="headerNames"
+			v-bind:row-component="phoneNumberRow"
+			v-bind:selected-id="selectedId">
+		</data-table>
+	</div>`,
 	props: {
-		id: undefined
+		selectedId: undefined
 	},
 	data: function() {
 		return {
-			phoneNumbers: this.phoneNumbers
+			phoneNumbers: this.phoneNumbers,
+			headerNames: ["ID", "Number", "Name", "State", "City", "Zip Code"]
 		};
 	},
 	created: function() {
@@ -98,60 +108,34 @@ const phoneNumbersPage = Vue.component("phone-numbers-page", {
 	}
 });
 
-Vue.component("phone-number-row", {
-	template: `<tr v-bind:class="{ selected: isSelected }">
-		<td>{{ number.ID }}</td>
-		<td>{{ number.Number }}</td>
-		<td>{{ number.Name }}</td>
-		<td>{{ number.State }}</td>
-		<td>{{ number.City }}</td>
-		<td>{{ number.ZipCode }}</td>
+const phoneNumberRow = Vue.component("phone-number-row", {
+	template: `<tr>
+		<td>{{ item.ID }}</td>
+		<td>{{ item.Number }}</td>
+		<td>{{ item.Name }}</td>
+		<td>{{ item.State }}</td>
+		<td>{{ item.City }}</td>
+		<td>{{ item.ZipCode }}</td>
 	</tr>`,
-	props: ["number", "selected-id"],
-	data: function() {
-		return {
-			isSelected: this.getIsSelected()
-		};
-	},
-	watch: {
-		selectedId: function() {
-			this.isSelected = this.getIsSelected();
-		}
-	},
-	methods: {
-		getIsSelected: function() {
-			return this.number.ID == this.selectedId;
-		}
-	}
+	props: ["item"]
 });
 
+/* Phone calls page */
 const phoneCallsPage = Vue.component("phone-calls-page", {
 	template: `<div class="container">
-		<h1 class="title">Phone Calls</h1>
-
-		<table class="table">
-			<thead>
-				<tr>
-					<th>ID</th>
-					<th>Phone Number ID</th>
-					<th>Twilio Call ID</th>
-					<th>Date Received</th>
-				</tr>
-			</thead>
-			<tbody>
-				<phone-call-row v-for="call in phoneCalls"
-					v-bind:call="call"
-					v-bind:selected-id="id">
-				</phone-call-row>
-			</tbody>
-		</table>
+		<data-table title="Phone Calls"
+			v-bind:items="phoneCalls"
+			v-bind:header-names="headerNames"
+			v-bind:row-component="phoneCallRow"
+			v-bind:selected-id="selectedId">
+		</data-table>
 	</div>`,
-	props: {
-		id: undefined
-	},
+	props: ["selected-id"],
 	data: function() {
 		return {
-			phoneCalls: this.phoneCalls
+			phoneCalls: this.phoneCalls,
+			headerNames: ["ID", "Phone Number ID", "Twilio Call ID",
+				"Date Received"]
 		};
 	},
 	created: function() {
@@ -165,65 +149,36 @@ const phoneCallsPage = Vue.component("phone-calls-page", {
 	}
 });
 
-Vue.component("phone-call-row", {
-	template: `<tr v-bind:class="{ selected: isSelected }">
-		<td>{{ call.ID }}</td>
+const phoneCallRow = Vue.component("phone-call-row", {
+	template: `<tr>
+		<td>{{ item.ID }}</td>
 		<td>
-			<router-link v-bind:to="'/numbers?id=' + call.PhoneNumberID">
-				{{ call.PhoneNumberID }}
+			<router-link v-bind:to="'/numbers?id=' + item.PhoneNumberID">
+				{{ item.PhoneNumberID }}
 			</router-link>
 		</td>
-		<td>{{ call.TwilioCallID }}</td>
-		<td>{{ call.DateReceived }}</td>
+		<td>{{ item.TwilioCallID }}</td>
+		<td>{{ item.DateReceived }}</td>
 	</tr>`,
-	props: ["call", "selected-id"],
-	data: function() {
-		return {
-			isSelected: this.getIsSelected()
-		};
-	},
-	watch: {
-		selectedId: function() {
-			this.isSelected = this.getIsSelected();
-		}
-	},
-	methods: {
-		getIsSelected: function() {
-			return this.call.ID == this.selectedId;
-		}
-	}
+	props: ["item"]
 });
 
+/* Challenges page */
 const challengesPage = Vue.component("challenges-page", {
 	template: `<div class="container">
-		<h1 class="title">Challenges</h1>
-
-		<table class="table">
-			<thead>
-				<tr>
-					<th>ID</th>
-					<th>Phone Call ID</th>
-					<th>Date Asked</th>
-					<th>Operand A</th>
-					<th>Operand B</th>
-					<th>Solution</th>
-					<th>Status</th>
-				</tr>
-			</thead>
-			<tbody>
-				<challenge-row v-for="challenge in challenges"
-					v-bind:challenge="challenge"
-					v-bind:selected-id="id">
-				</challenge-row>
-			</tbody>
-		</table>
+		<data-table title="Challenges"
+			v-bind:items="challenges"
+			v-bind:header-names="headerNames"
+			v-bind:row-component="challengeRow"
+			v-bind:selected-id="selectedId">
+		</data-table>
 	</div>`,
-	props: {
-		id: undefined
-	},
+	props: ["selected-id"],
 	data: function() {
 		return {
-			challenges: this.challenges
+			challenges: this.challenges,
+			headerNames: ["ID", "Phone Call ID", "Date Asked", "Operand A",
+				"Operand B", "Solution", "Status"]
 		};
 	},
 	created: function() {
@@ -237,57 +192,54 @@ const challengesPage = Vue.component("challenges-page", {
 	}
 });
 
-Vue.component("challenge-row", {
-	template: `<tr v-bind:class="{ selected: isSelected }">
-		<td>{{ challenge.ID }}</td>
+const challengeRow = Vue.component("challenge-row", {
+	template: `<tr>
+		<td>{{ item.ID }}</td>
 		<td>
-			<router-link v-bind:to="'/calls?id=' + challenge.PhoneCallID">
-				{{ challenge.PhoneCallID }}
+			<router-link v-bind:to="'/calls?id=' + item.PhoneCallID">
+				{{ item.PhoneCallID }}
 			</router-link>
 		</td>
-		<td>{{ challenge.DateAsked }}</td>
-		<td>{{ challenge.OperandA }}</td>
-		<td>{{ challenge.OperandB }}</td>
-		<td>{{ challenge.Solution }}</td>
+		<td>{{ item.DateAsked }}</td>
+		<td>{{ item.OperandA }}</td>
+		<td>{{ item.OperandB }}</td>
+		<td>{{ item.Solution }}</td>
 		<td>
-			<div class="tag"
-				v-bind:class="{ 'is-success': isSuccess, 'is-danger': isFailure, 'is-warning': isAnswering }">
-				{{ challenge.Status }}
+			<div class="tag" v-bind:class="[statusClass]">
+				{{ item.Status }}
 			</div>
 		</td>
 	</tr>`,
-	props: ["challenge", "selected-id"],
+	props: ["item"],
 	data: function() {
 		return {
-			isSelected: this.getIsSelected(),
-			isSuccess: this.getIsSuccess(),
-			isFailure: this.getIsFailure(),
-			isAnswering: this.getIsAnswering()
+			statusClass: ""
 		};
 	},
 	watch: {
-		selectedId: function() {
-			this.isSelected = this.getIsSelected();
-		},
-		challenge: function() {
-			this.isSuccess = this.getIsSuccess();
-			this.isFailure = this.getIsFailure();
-			this.isAnswering = this.getIsAnswering();
+		item: function() {
+			this.setStatusClass();
 		}
 	},
 	methods: {
-		getIsSelected: function() {
-			return this.challenge.ID == this.selectedId;
-		},
-		getIsSuccess: function() {
-			return this.challenge.Status == "PASSED";
-		},
-		getIsFailure: function() {
-			return this.challenge.Status == "FAILED";
-		},
-		getIsAnswering: function() {
-			return this.challenge.Status == "ANSWERING";
+		setStatusClass: function() {
+			switch (this.item.Status) {
+				case "PASSED":
+					this.statusClass = "is-success";
+					break;
+
+				case "FAILED":
+					this.statusClass = "is-danger";
+					break;
+
+				case "ANSWERING":
+					this.statusClass = "is-warning";
+					break;
+			}
 		}
+	},
+	created: function() {
+		this.setStatusClass()
 	}
 });
 
@@ -303,7 +255,7 @@ const router = new VueRouter({
 			component: phoneNumbersPage,
 			props: function(route) {
 				return {
-					id: route.query.id
+					'selected-id': route.query.id
 				};
 			}
 		},
@@ -312,7 +264,7 @@ const router = new VueRouter({
 			component: phoneCallsPage,
 			props: function(route) {
 				return {
-					id: route.query.id
+					'selected-id': route.query.id
 				};
 			}
 		},
@@ -321,7 +273,7 @@ const router = new VueRouter({
 			component: challengesPage,
 			props: function(route) {
 				return {
-					id: route.query.id
+					'selected-id': route.query.id
 				};
 			}
 		}

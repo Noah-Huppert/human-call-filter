@@ -6,3 +6,7 @@ body {
 	color: white;
 	background: hsl(171, 100%, 41%);
 }
+
+.selected a {
+	color: white;
+}
