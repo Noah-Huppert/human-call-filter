@@ -18,7 +18,6 @@
   "homepage": "https://github.com/Noah-Huppert/human-call-filter#readme",
   "dependencies": {
     "bulma": "^0.7.1",
-    "chart.js": "^2.7.2",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"

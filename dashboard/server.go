@@ -26,20 +26,11 @@ func NewServer(logger golog.Logger, cfg *config.Config,
 
 	router.Handle("/healthz", healthHandler)
 
-	// Phone numbers
-	// ... Get phone numbers
+	// Phone numbers handler
 	phoneNumbersLogger := routeLogger.GetChild("phone-numbers")
 	phoneNumbersHandler := NewPhoneNumbersHandler(phoneNumbersLogger, db)
 
 	router.Handle("/api/phone_numbers", phoneNumbersHandler).Methods("GET")
-
-	// ... Count phone numbers
-	numbersCountLogger := routeLogger.GetChild("phone-numbers-count")
-	phoneNumbersCountHandler := NewPhoneNumbersCountHandler(numbersCountLogger,
-		db)
-
-	router.Handle("/api/phone_numbers/count", phoneNumbersCountHandler).
-		Methods("GET")
 
 	// Phone calls handler
 	phoneCallsLogger := routeLogger.GetChild("phone-calls")

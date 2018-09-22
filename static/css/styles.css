@@ -10,3 +10,8 @@ body {
 .selected a {
 	color: white;
 }
+
+.overview-card {
+	width: 250px;
+	text-align: center;
+}

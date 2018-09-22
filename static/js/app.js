@@ -125,21 +125,6 @@ Vue.component("chart", {
 	}
 });
 
-/* Overview page */
-const overviewPage = Vue.component("overview-page", {
-	template: `<div class="container">
-		<chart v-bind:config="chartConfig"></chart>
-	</div>`,
-	computed: {
-		chartConfig: function() {
-			return {
-				type: "line",
-				data: [1,2]
-			};
-		}
-	}
-});
-
 /* Phone numbers page */
 const phoneNumbersPage = Vue.component("phone-numbers-page", {
 	template: `<div class="container">
@@ -295,11 +280,7 @@ const router = new VueRouter({
 	routes: [
 		{
 			path: "/",
-			redirect: "/overview"
-		},
-		{
-			path: "/overview",
-			component: overviewPage
+			redirect: "/numbers"
 		},
 		{
 			path: "/numbers",
