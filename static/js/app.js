@@ -7,6 +7,40 @@ function makeAPIRequest(path, method) {
 	}).then(res => res.json());
 }
 
+const store = new Vuex.Store({
+	state: {
+		phoneNumbers: [],
+		phoneCalls: [],
+		challenges: []
+	},
+	mutations: {
+		setPhoneNumbers: function(state, phoneNumbers) {
+			state.phoneNumbers = phoneNumbers;
+		},
+		setPhoneCalls: function(state, phoneCalls) {
+			state.phoneCalls = phoneCalls;
+		},
+		setChallenges: function(state, challenges) {
+			state.challenges = challenges;
+		}
+	}
+});
+
+makeAPIRequest("/api/phone_numbers", "GET")
+	.then(function(resp) {
+		store.commit("setPhoneNumbers", resp.phone_numbers);
+	});
+
+makeAPIRequest("/api/phone_calls", "GET")
+	.then(function(resp) {
+		store.commit("setPhoneCalls", resp.phone_calls);
+	});
+
+makeAPIRequest("/api/challenges", "GET")
+	.then(function(resp) {
+		store.commit("setChallenges", resp.challenges);
+	});
+
 /* Navigation */
 function toggleNavbarMenu() {
 	document.getElementById("nav-menu").classList.toggle("is-active");
@@ -93,18 +127,13 @@ const phoneNumbersPage = Vue.component("phone-numbers-page", {
 	},
 	data: function() {
 		return {
-			phoneNumbers: this.phoneNumbers,
 			headerNames: ["ID", "Number", "Name", "State", "City", "Zip Code"]
 		};
 	},
-	created: function() {
-		this.phoneNumbers = [];
-		var self = this;
-
-		makeAPIRequest("/api/phone_numbers", "GET")
-			.then(function(resp) {
-				self.phoneNumbers = resp.phone_numbers;
-			});
+	computed: {
+		phoneNumbers: function() {
+			return store.state.phoneNumbers;
+		}
 	}
 });
 
@@ -133,19 +162,14 @@ const phoneCallsPage = Vue.component("phone-calls-page", {
 	props: ["selected-id"],
 	data: function() {
 		return {
-			phoneCalls: this.phoneCalls,
 			headerNames: ["ID", "Phone Number ID", "Twilio Call ID",
 				"Date Received"]
 		};
 	},
-	created: function() {
-		this.phoneCalls = [];
-		var self = this;
-
-		makeAPIRequest("/api/phone_calls", "GET")
-			.then(function(resp) {
-				self.phoneCalls = resp.phone_calls;
-			});
+	computed: {
+		phoneCalls: function() {
+			return store.state.phoneCalls;
+		}
 	}
 });
 
@@ -176,19 +200,14 @@ const challengesPage = Vue.component("challenges-page", {
 	props: ["selected-id"],
 	data: function() {
 		return {
-			challenges: this.challenges,
 			headerNames: ["ID", "Phone Call ID", "Date Asked", "Operand A",
 				"Operand B", "Solution", "Status"]
 		};
 	},
-	created: function() {
-		this.challenges = [];
-		var self = this;
-
-		makeAPIRequest("/api/challenges", "GET")
-			.then(function(resp) {
-				self.challenges = resp.challenges;
-			});
+	computed: {
+		challenges: function() {
+			return store.state.challenges;
+		}
 	}
 });
 
