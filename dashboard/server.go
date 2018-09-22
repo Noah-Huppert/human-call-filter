@@ -31,26 +31,27 @@ func NewServer(logger golog.Logger, cfg *config.Config,
 	phoneNumbersLogger := routeLogger.GetChild("phone-numbers")
 	phoneNumbersHandler := NewPhoneNumbersHandler(phoneNumbersLogger, db)
 
-	router.Handle("/api/phone_numbers", phoneNumbersHandler)
+	router.Handle("/api/phone_numbers", phoneNumbersHandler).Methods("GET")
 
 	// ... Count phone numbers
 	numbersCountLogger := routeLogger.GetChild("phone-numbers-count")
 	phoneNumbersCountHandler := NewPhoneNumbersCountHandler(numbersCountLogger,
 		db)
 
-	router.Handle("/api/phone_numbers/count", phoneNumbersCountHandler)
+	router.Handle("/api/phone_numbers/count", phoneNumbersCountHandler).
+		Methods("GET")
 
 	// Phone calls handler
 	phoneCallsLogger := routeLogger.GetChild("phone-calls")
 	phoneCallsHandler := NewPhoneCallsHandler(phoneCallsLogger, db)
 
-	router.Handle("/api/phone_calls", phoneCallsHandler)
+	router.Handle("/api/phone_calls", phoneCallsHandler).Methods("GET")
 
 	// Challenges handler
 	challengesLogger := routeLogger.GetChild("challenges")
 	challengesHandler := NewChallengesHandler(challengesLogger, db)
 
-	router.Handle("/api/challenges", challengesHandler)
+	router.Handle("/api/challenges", challengesHandler).Methods("GET")
 
 	// File server
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("static")))
