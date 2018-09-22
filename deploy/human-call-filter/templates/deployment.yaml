@@ -65,7 +65,7 @@ spec:
             httpGet:
               path: /healthz
               port: dashboard
-{{- if .Values.gcp.cloudsql.enabled -}}
+{{- if .Values.gcp.cloudsql.enabled }}
         - name: cloudsql-proxy
           image: gcr.io/cloudsql-docker/gce-proxy:1.11
           command: ["/cloud_sql_proxy",
