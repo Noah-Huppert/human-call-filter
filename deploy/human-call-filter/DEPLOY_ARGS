@@ -1,1 +1,1 @@
---set db.host=$DB_HOST,db.password=$DB_PASSWORD,voip.address=\"$DESTINATION\"
+--set db.host=$DB_HOST,db.password=$DB_PASSWORD,voip.address=$DESTINATION
