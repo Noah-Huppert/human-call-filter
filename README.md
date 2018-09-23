@@ -10,6 +10,7 @@ Captcha for phone calls.
 	- [Dashboard](#dashboard)
 - [Setup](#setup)
 	- [Configuration](#configuration)
+	- [Audio Clips](#audio-clips)
 	- [Database](#database)
 	- [Twilio](#twilio)
 	- [Voice Over IP](#voice-over-ip)
@@ -83,6 +84,24 @@ Human call filter uses environment variables for configuration:
 - `DB_NAME`: Postgres database name
 - `DB_USERNAME`: Postgres username
 - `DB_PASSWORD`: Postgres password, optional
+
+## Audio Clips
+Human call filter plays audio clips during calls to communicate with
+the caller.
+
+These clips are located in the `./audio-clips/` directory.
+
+- `./audio-clips/`
+	- `intro.mp3`: Played before a caller is asked a challenge to verify they
+		are human
+	- `success.mp3`: Played after a caller provides the correct answer to a
+		challenge and before they are forwarded to the VOIP phone address
+	- `fail.mp3`: Played after a caller provides the wrong answer to a 
+		challenge and before the call is ended
+
+It is recommended that you record your own versions of each of these clips. To 
+ensure that callers who hear these clips know that they have reached 
+your number.
 
 ## Database
 Human call filter stores information about calls in a Postgres database.  
