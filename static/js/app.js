@@ -68,11 +68,6 @@ Vue.component("navbar-menu", {
 	template: `<div id="nav-menu" class="navbar-menu">
 		<div class="navbar-end">
 			<div class="navbar-item" v-on:click="closeNavbarMenu">
-				<router-link to="/overview">
-					Overview
-				</router-link>
-			</div>
-			<div class="navbar-item" v-on:click="closeNavbarMenu">
 				<router-link to="/numbers">
 					Numbers
 				</router-link>
