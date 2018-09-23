@@ -109,9 +109,9 @@ func (n *PhoneNumber) Insert(db *sqlx.DB) error {
 func (n PhoneNumber) HasAChallengePass(db *sqlx.DB) (bool, error) {
 	var exists bool
 
-	err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM phone_calls, challenges "+
-		"WHERE phone_calls.phone_number_id = $1 AND "+
-		"challenges.status = $2 LIMIT 1)", n.ID, ChallengeStatusPassed).
+	err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM challenges WHERE "+
+		"phone_call_id IN (SELECT id FROM phone_calls WHERE "+
+		"phone_number_id = $1) AND status = $2)", n.ID, ChallengeStatusPassed).
 		Scan(&exists)
 
 	if err != nil && err != sql.ErrNoRows {
