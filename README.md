@@ -1,8 +1,7 @@
 Project status: Active development
 
 # Human Call Filter
-Validates that a caller is human before forwarding calls to a VOIP (voice over 
-IP) number.
+Captcha for phone calls.  
 
 # Table Of Contents
 - [Overview](#overview)
@@ -19,6 +18,8 @@ IP) number.
 	- [Docker](#docker)
 
 # Overview
+Captcha for phone calls.  
+
 Human call filter operates a separate phone number that verifies callers are 
 human before forwarding the call to a VOIP number.
 
