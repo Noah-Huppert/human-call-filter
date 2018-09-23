@@ -1,4 +1,4 @@
-Project status: Active development
+Project status: Complete | Actively maintaining
 
 # Human Call Filter
 Captcha for phone calls.  
